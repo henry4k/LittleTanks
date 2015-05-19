@@ -1,5 +1,4 @@
 local class = require 'middleclass'
-local Tile  = require 'lovegame.Tile'
 local floor = math.floor
 
 
@@ -18,53 +17,38 @@ end
 local TileMap = class('lovegame.TileMap')
 
 function TileMap:initialize( options )
-  local width            = options.width
-  local height           = options.height
-  local tileAtlasRows    = options.tileAtlasRows
-  local tileAtlasColumns = options.tileAtlasColumns
-  local defaultTileClass = options.defaultTileClass or Tile
+  local width    = options.width
+  local height   = options.height
 
-  assert(width and height and tileAtlasRows and tileAtlasColumns)
+  assert(width and height)
 
-  self.width            = width
-  self.height           = height
-  self.tileAtlasRows    = tileAtlasRows
-  self.tileAtlasColumns = tileAtlasColumns
-  self.defaultTileClass = defaultTileClass
+  self.width    = width
+  self.height   = height
+  self.idToTileMap = {}
+  self.tileToIdMap = {}
 
-  self:_createMap()
-  self:_createTileAtlasQuads()
+  self:_initializeMap()
 end
 
-function TileMap:_createMap()
+function TileMap:_initializeMap()
   local width  = self.width
   local height = self.height
-  local tileClass = self.defaultTileClass
   local map = {}
 
   for y = 1, height do
   for x = 1, width do
     local index = coordToIndex(x, y, width)
-    map[index] = tileClass()
+    map[index] = 1
   end
   end
 
   self.map = map
 end
 
-function TileMap:_createTileAtlasQuads()
-  local width   = self.width
-  local rows    = self.tileAtlasRows
-  local columns = self.tileAtlasColumns
-  local quads   = {}
-
-  for i = 1, rows*columns do
-    local x, y = indexToCoords(i, rows)
-    local quad = love.graphics.newQuad(x-1, y-1, 1, 1, rows, columns)
-    quads[i] = quad
-  end
-
-  self.tileAtlasQuads = quads
+function TileMap:registerTile( tile )
+  assert(not self.tileToIdMap[tile], 'Tile has already been registered.')
+  table.insert(self.idToTileMap, tile)
+  self.tileToIdMap[tile] = #self.idToTileMap
 end
 
 function TileMap:isInBounds( x, y )
@@ -75,28 +59,16 @@ end
 function TileMap:at( x, y )
   if self:isInBounds(x,y) then
     local index = coordToIndex(x, y, self.width)
-    return self.map[index]
+    local tileId = self.map[index]
+    return self.idToTileMap[tileId]
   end
 end
 
 function TileMap:setAt( x, y, tile )
   assert(self:isInBounds(x, y, 'Out of bounds!'))
   local index = coordToIndex(x, y, self.width)
-  self.map[index] = tile
+  local tileId = self.tileToIdMap[tile]
+  self.map[index] = id
 end
-
-function TileMap:fillSpriteBatch( spriteBatch, xStart, yStart, width, height )
-  local tileAtlasQuads = self.tileAtlasQuads
-
-  for yOffset = 0, height-1 do
-  for xOffset = 0,  width-1 do
-    local tile = self:at(xStart+xOffset,
-                         yStart+yOffset)
-    local quad = tileAtlasQuads[tile.id]
-    spriteBatch:add(quad, xOffset, yOffset)
-  end
-  end
-end
-
 
 return TileMap

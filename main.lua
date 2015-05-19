@@ -1,33 +1,27 @@
 local gamera = require 'gamera'
 local utils = require 'utils'
-local imagefont = require 'imagefont'
 local TileMap = require 'lovegame.TileMap'
-local LittleTank = require 'lovegame.LittleTank'
+local RandomTile = require 'lovegame.RandomTile'
+local TileMapView = require 'lovegame.TileMapView'
 
 
 running = false
 tilemap = nil
-tilemapSpriteBatch = nil
-littleTank = nil
+tilemapView = nil
 
 function love.load()
   love.graphics.setDefaultFilter('linear', 'nearest')
 
   tilemap = TileMap{width=40,
-                    height=30,
-                    tileAtlasRows=3,
-                    tileAtlasColumns=2}
+                    height=30}
+
+  local randomTile = RandomTile(3, 2)
+  tilemap:registerTile(randomTile)
 
   local image = love.graphics.newImage('tiles.png')
-  tilemapSpriteBatch = love.graphics.newSpriteBatch(image)
 
-  tilemap:fillSpriteBatch(tilemapSpriteBatch,
-                          10, 10, 20, 20)
-
-  local font = imagefont.load()
-  love.graphics.setFont(font)
-
-  littleTank = LittleTank()
+  tilemapView = TileMapView(image, 16)
+  tilemapView:update(tilemap, 10, 10, 20, 20)
 end
 
 function love.focus( hasFocus )
@@ -48,17 +42,10 @@ function love.update( timeDelta )
   if not running then
     return
   end
-
-  littleTank:update(timeDelta)
 end
 
 function love.draw()
-  love.graphics.draw(tilemapSpriteBatch,
-                     0, 0,
-                     0,
-                     16*3)
-
-  littleTank:draw(10, 10, 0, 3)
+  tilemapView:draw()
 
   if not running then
     local x, y = utils.fractionToPixels(0.5, 0.5)
