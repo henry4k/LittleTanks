@@ -1,10 +1,13 @@
 local class = require 'middleclass'
 local anim8 = require 'anim8'
+local TankTurret = require 'lovegame.TankTurret'
 
 
-local LittleTank = class('lovegame.LittleTank')
+local SimpleTankTurret = class('lovegame.SimpleTankTurret', TankTurret)
 
-function LittleTank:initialize()
+function SimpleTankTurret:initialize()
+  TankTurret.initialize(self)
+
   local image = love.graphics.newImage('LittleTank.png')
   self.image = image
 
@@ -15,12 +18,14 @@ function LittleTank:initialize()
   self.animation = animation
 end
 
-function LittleTank:update( timeDelta )
+function SimpleTankTurret:update( timeDelta )
+  TankTurret.update(self, timeDelta)
+
   self.animation:update(timeDelta)
 end
 
-function LittleTank:draw( ... )
-  self.animation:draw(self.image, ...)
+function SimpleTankTurret:draw()
+  self.animation:draw(self.image, -8, -8)
 end
 
-return LittleTank
+return SimpleTankTurret

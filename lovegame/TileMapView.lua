@@ -15,7 +15,11 @@ function TileMapView:initialize( atlasImage, tileWidth, tileHeight, maxSprites )
   self.spriteBatch = love.graphics.newSpriteBatch(atlasImage, maxSprites, 'dynamic')
 end
 
-function TileMapView:update( tileMap, xStart, yStart, width, height )
+function TileMapView:destroy()
+  -- Nothing to do here (yet)
+end
+
+function TileMapView:set( tileMap, xStart, yStart, width, height )
   local tileWidth   = self.tileWidth
   local tileHeight  = self.tileHeight
   local atlasGrid   = self.atlasGrid

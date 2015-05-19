@@ -30,6 +30,10 @@ function TileMap:initialize( options )
   self:_initializeMap()
 end
 
+function TileMap:destroy()
+  -- Nothing to do here (yet)
+end
+
 function TileMap:_initializeMap()
   local width  = self.width
   local height = self.height
