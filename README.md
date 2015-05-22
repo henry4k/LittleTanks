@@ -1,6 +1,8 @@
 Little Tanks
 ============
 
+![](icon.gif)
+
 Cute little tanks shooting with cute little guns
 
 乁(｡•́‿•̀｡)ㄏ
