@@ -5,9 +5,9 @@ local function loadImage( fileName, ... )
 end
 
 function resources.load()
-  loadImage('tiles.png')
-  loadImage('tiles-small.png')
-  loadImage('tank.png')
+  loadImage('littletanks/tiles.png')
+  loadImage('littletanks/tiles-small.png')
+  loadImage('littletanks/tank.png')
 end
 
 return resources

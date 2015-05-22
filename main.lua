@@ -3,16 +3,16 @@ local control = require 'control'
 local utils = require 'utils'
 local Vector = require 'Vector'
 local Aabb = require 'Aabb'
-local Camera = require 'lovegame.Camera'
-local TileMap = require 'lovegame.TileMap'
-local RandomTile = require 'lovegame.RandomTile'
-local LazyTileMapView = require 'lovegame.LazyTileMapView'
+local Camera = require 'littletanks.Camera'
+local TileMap = require 'littletanks.TileMap'
+local RandomTile = require 'littletanks.RandomTile'
+local LazyTileMapView = require 'littletanks.LazyTileMapView'
 
-local Tank = require 'lovegame.Tank'
-local SimpleTankChassis = require 'lovegame.SimpleTankChassis'
-local SimpleTankTurret = require 'lovegame.SimpleTankTurret'
+local Tank = require 'littletanks.Tank'
+local SimpleTankChassis = require 'littletanks.SimpleTankChassis'
+local SimpleTankTurret = require 'littletanks.SimpleTankTurret'
 
-local resources = require 'lovegame.resources'
+local resources = require 'littletanks.resources'
 local debug2d = require 'debug2d'
 
 
@@ -35,7 +35,7 @@ function love.load()
   local randomTile = RandomTile(3, 2)
   tileMap:registerTile(randomTile)
 
-  tileMapView = LazyTileMapView(resources['tiles.png'], 16)
+  tileMapView = LazyTileMapView(resources['littletanks/tiles.png'], 16)
   tileMapView:setMargin(4)
 
   camera = Camera{tileMap=tileMap,

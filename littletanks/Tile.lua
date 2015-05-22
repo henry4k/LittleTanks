@@ -1,7 +1,7 @@
 local class = require 'middleclass'
 
 
-local Tile = class('lovegame.Tile')
+local Tile = class('littletanks.Tile')
 
 function Tile:getAtlasCoords()
   error('Method not implemented.')

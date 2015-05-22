@@ -1,7 +1,7 @@
 local class = require 'middleclass'
 
 
-local TankTurret = class('lovegame.TankTurret')
+local TankTurret = class('littletanks.TankTurret')
 
 function TankTurret:initialize()
 end

@@ -9,7 +9,7 @@ local ceil = math.ceil
 local debug2d = require 'debug2d'
 
 
-local Camera = class('lovegame.Camera')
+local Camera = class('littletanks.Camera')
 
 function Camera:initialize( options )
   assert(options.tileMap and

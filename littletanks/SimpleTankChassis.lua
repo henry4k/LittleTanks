@@ -1,18 +1,18 @@
 local class = require 'middleclass'
 local anim8 = require 'anim8'
 local Vector = require 'Vector'
-local resources = require 'lovegame.resources'
-local TankChassis = require 'lovegame.TankChassis'
+local resources = require 'littletanks.resources'
+local TankChassis = require 'littletanks.TankChassis'
 
 
-local SimpleTankChassis = class('lovegame.SimpleTankChassis', TankChassis)
+local SimpleTankChassis = class('littletanks.SimpleTankChassis', TankChassis)
 
 function SimpleTankChassis:initialize()
   TankChassis.initialize(self)
 
   self.turretAttachmentPoint = Vector(-1, 0)
 
-  local image = resources['tank.png']
+  local image = resources['littletanks/tank.png']
   self.image = image
 
   local grid = anim8.newGrid(16, 11, image:getDimensions())

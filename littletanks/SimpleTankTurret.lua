@@ -1,15 +1,15 @@
 local class = require 'middleclass'
 local anim8 = require 'anim8'
-local resources = require 'lovegame.resources'
-local TankTurret = require 'lovegame.TankTurret'
+local resources = require 'littletanks.resources'
+local TankTurret = require 'littletanks.TankTurret'
 
 
-local SimpleTankTurret = class('lovegame.SimpleTankTurret', TankTurret)
+local SimpleTankTurret = class('littletanks.SimpleTankTurret', TankTurret)
 
 function SimpleTankTurret:initialize()
   TankTurret.initialize(self)
 
-  local image = resources['tank.png']
+  local image = resources['littletanks/tank.png']
   self.image = image
 
   local grid = anim8.newGrid(11,

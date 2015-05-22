@@ -1,9 +1,9 @@
 local class = require 'middleclass'
 local Vector = require 'Vector'
-local Entity = require 'lovegame.Entity'
+local Entity = require 'littletanks.Entity'
 
 
-local MovableEntity = class('lovegame.MovableEntity', Entity)
+local MovableEntity = class('littletanks.MovableEntity', Entity)
 
 function MovableEntity:initialize()
   Entity.initialize(self)

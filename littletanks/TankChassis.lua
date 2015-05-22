@@ -2,7 +2,7 @@ local class = require 'middleclass'
 local Vector = require 'Vector'
 
 
-local TankChassis = class('lovegame.TankChassis')
+local TankChassis = class('littletanks.TankChassis')
 
 function TankChassis:initialize()
   self.turretAttachmentPoint = Vector(0, 0)

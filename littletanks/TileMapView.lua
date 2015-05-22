@@ -4,7 +4,7 @@ local Vector = require 'Vector'
 local Aabb = require 'Aabb'
 
 
-local TileMapView = class('lovegame.TileMapView')
+local TileMapView = class('littletanks.TileMapView')
 
 function TileMapView:initialize( atlasImage, tileWidth, tileHeight, maxSprites )
   tileHeight = tileHeight or tileWidth

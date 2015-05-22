@@ -15,7 +15,7 @@ local function indexToCoords( index, width )
 end
 
 
-local TileMap = class('lovegame.TileMap')
+local TileMap = class('littletanks.TileMap')
 
 function TileMap:initialize( options )
   local width    = options.width

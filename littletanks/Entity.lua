@@ -2,7 +2,7 @@ local class = require 'middleclass'
 local Vector = require 'Vector'
 
 
-local Entity = class('lovegame.Entity')
+local Entity = class('littletanks.Entity')
 
 function Entity:initialize()
   self.position = Vector(0, 0)

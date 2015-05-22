@@ -1,10 +1,10 @@
 local class = require 'middleclass'
 local Vector = require 'Vector'
 local Controllable = require 'Controllable'
-local MovableEntity = require 'lovegame.MovableEntity'
+local MovableEntity = require 'littletanks.MovableEntity'
 
 
-local Tank = class('lovegame.Tank', MovableEntity)
+local Tank = class('littletanks.Tank', MovableEntity)
 Tank:include(Controllable)
 
 function Tank:initialize()

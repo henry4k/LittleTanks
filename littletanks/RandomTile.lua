@@ -1,8 +1,8 @@
 local class = require 'middleclass'
-local Tile = require 'lovegame.Tile'
+local Tile = require 'littletanks.Tile'
 
 
-local RandomTile = class('lovegame.RandomTile', Tile)
+local RandomTile = class('littletanks.RandomTile', Tile)
 
 function RandomTile:initialize( maxX, maxY )
   Tile.initialize(self)

@@ -1,10 +1,10 @@
 local class = require 'middleclass'
 local Aabb = require 'Aabb'
-local TileMapView = require 'lovegame.TileMapView'
+local TileMapView = require 'littletanks.TileMapView'
 local debug2d = require 'debug2d'
 
 
-local LazyTileMapView = class('lovegame.LazyTileMapView', TileMapView)
+local LazyTileMapView = class('littletanks.LazyTileMapView', TileMapView)
 
 function LazyTileMapView:initialize( ... )
   TileMapView.initialize(self, ...)

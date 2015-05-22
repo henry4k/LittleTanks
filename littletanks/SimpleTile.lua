@@ -1,8 +1,8 @@
 local class = require 'middleclass'
-local Tile = require 'lovegame.Tile'
+local Tile = require 'littletanks.Tile'
 
 
-local SimpleTile = class('lovegame.SimpleTile', Tile)
+local SimpleTile = class('littletanks.SimpleTile', Tile)
 
 function SimpleTile:initialize( atlasPositionX, atlasPositionY )
   Tile.initialize(self)
