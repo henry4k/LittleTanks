@@ -1,4 +1,5 @@
 local class = require 'middleclass'
+local Aabb = require 'Aabb'
 local floor = math.floor
 
 
@@ -53,6 +54,14 @@ function TileMap:registerTile( tile )
   assert(not self.tileToIdMap[tile], 'Tile has already been registered.')
   table.insert(self.idToTileMap, tile)
   self.tileToIdMap[tile] = #self.idToTileMap
+end
+
+function TileMap:getDimensions()
+  return self.width, self.height
+end
+
+function TileMap:getBoundaries()
+  return Aabb(1, 1, self.width, self.height)
 end
 
 function TileMap:isInBounds( x, y )

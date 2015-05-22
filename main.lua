@@ -1,45 +1,45 @@
-local gamera = require 'gamera'
 local input = require 'input'
 local control = require 'control'
 local utils = require 'utils'
 local Vector = require 'Vector'
+local Aabb = require 'Aabb'
+local Camera = require 'lovegame.Camera'
 local TileMap = require 'lovegame.TileMap'
 local RandomTile = require 'lovegame.RandomTile'
-local TileMapView = require 'lovegame.TileMapView'
+local LazyTileMapView = require 'lovegame.LazyTileMapView'
 
 local Tank = require 'lovegame.Tank'
 local SimpleTankChassis = require 'lovegame.SimpleTankChassis'
 local SimpleTankTurret = require 'lovegame.SimpleTankTurret'
 
+local resources = require 'lovegame.resources'
+local debug2d = require 'debug2d'
+
 
 running = false
-tilemap = nil
-tilemapView = nil
+camera = nil
+tileMap = nil
+tileMapView = nil
 tank = nil
-
-local resources = {}
-
-local function LoadImage( fileName, ... )
-  assert(not resources[fileName], 'Resource already loaded.')
-  resources[fileName] = love.graphics.newImage(fileName, ...)
-end
 
 function love.load()
   love.graphics.setDefaultFilter('linear', 'nearest')
+  resources.load()
 
   input.bindVirtualAxis('a', 'd', 'moveX')
   input.bindVirtualAxis('s', 'w', 'moveY')
 
-  LoadImage('tiles.png')
-
-  tilemap = TileMap{width=40,
-                    height=30}
+  tileMap = TileMap{width=40,
+                    height=40}
 
   local randomTile = RandomTile(3, 2)
-  tilemap:registerTile(randomTile)
+  tileMap:registerTile(randomTile)
 
-  tilemapView = TileMapView(resources['tiles.png'], 16)
-  tilemapView:set(tilemap, 10, 10, 20, 20)
+  tileMapView = LazyTileMapView(resources['tiles.png'], 16)
+  tileMapView:setMargin(4)
+
+  camera = Camera{tileMap=tileMap,
+                  tileMapView=tileMapView}
 
   tank = Tank()
   tank:setChassis(SimpleTankChassis())
@@ -47,13 +47,24 @@ function love.load()
 
   control.pushControllable(tank)
 
-  tank.position = Vector(10, 10)
+  tank.position = Vector(400, 400)
+
+  camera:setTargetPosition(10, 10, false)
+  camera:setTargetEntity(tank, true)
+  camera.camera:setScale(1)
+
+  local w, h = love.graphics.getDimensions()
+  camera.camera:setWindow(w*.25, h*.25, w*.5, h*.5)
 end
 
 function love.quit()
-  tilemap:destroy()
-  tilemapView:destroy()
+  tileMap:destroy()
+  tileMapView:destroy()
   tank:destroy()
+end
+
+function love.resize()
+  --camera:setWindow(0, 0, love.graphics.getDimensions())
 end
 
 function love.focus( hasFocus )
@@ -70,11 +81,26 @@ function love.update( timeDelta )
   end
 
   tank:update(timeDelta)
+  camera:update(timeDelta)
+end
+
+function DRAW_DEBUG_STUFF()
+  tank:draw()
+  debug2d.drawAabbs()
 end
 
 function love.draw()
-  tilemapView:draw()
-  tank:draw()
+
+  local w, h = love.graphics.getDimensions()
+  love.graphics.setColor(0, 128, 255)
+  love.graphics.setLineWidth(4)
+  love.graphics.rectangle('line', w*.25, h*.25, w*.5, h*.5)
+  love.graphics.setLineWidth(1)
+  love.graphics.setColor(255, 255, 255)
+
+  camera:draw()
+
+  debug2d.drawText()
 
   if not running then
     local x, y = utils.fractionToPixels(0.5, 0.5)

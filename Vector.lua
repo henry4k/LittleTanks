@@ -7,6 +7,8 @@ local getmetatable = getmetatable
 local rawset       = rawset
 local max          = math.max
 local sqrt         = math.sqrt
+local floor        = math.floor
+local ceil         = math.ceil
 local unpack       = unpack
 
 
@@ -63,6 +65,14 @@ function Vector.prototype:unpack( componentCount )
         end
         return unpack(r)
     end
+end
+
+function Vector.prototype:apply( fn )
+    local r = Vector()
+    for i = 1, #self do
+        rawset(r, i, fn(self[i]))
+    end
+    return r
 end
 
 function Vector.prototype:operate( other, operationFn )
@@ -170,6 +180,14 @@ function Vector.prototype:componentsGreaterOrEqualTo( other )
         end
     end
     return true
+end
+
+function Vector.prototype:floor()
+    return self:apply(floor)
+end
+
+function Vector.prototype:ceil()
+    return self:apply(ceil)
 end
 
 --- Add another vector or number (scalar).  (Scalars affect all components.)
