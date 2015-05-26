@@ -11,6 +11,8 @@ function Tank:initialize()
   MovableEntity.initialize(self)
   self:initializeControllable()
 
+  self:setSize(Vector(16, 16))
+
   self.steering = Vector(0, 0)
   self.friction = 0.9
 
@@ -48,7 +50,7 @@ end
 
 function Tank:draw()
   love.graphics.push()
-    love.graphics.translate(self.position:unpack(2))
+    love.graphics.translate(self:getPosition():unpack(2))
 
     self.chassis:draw()
 

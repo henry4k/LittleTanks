@@ -40,8 +40,7 @@ function Camera:_getWorldBoundaries()
 end
 
 function Camera:_getInterpolatedPosition()
-  local target = self.target
-  local targetPosition = target.position
+  local targetPosition = self:getTargetPosition()
   local startTime = self.interpolationStartTime
 
   if not startTime then
@@ -65,19 +64,32 @@ function Camera:_getInterpolatedPosition()
   end
 end
 
-function Camera:setTargetEntity( entity, interpolate )
-  if interpolate then
-    --self.interpolationStartPosition = self:_getInterpolatedPosition()
-    self.interpolationStartPosition = Vector(self.camera:getPosition())
-    self.interpolationStartTime = getTime()
-  end
-
-  self.target = entity
+function Camera:_startInterpolation()
+  self.interpolationStartPosition = Vector(self.camera:getPosition())
+  self.interpolationStartTime = getTime()
 end
 
 function Camera:setTargetPosition( x, y, interpolate )
-  local fakeEntity = { position = Vector(x, y) }
-  self:setTargetEntity(fakeEntity, interpolate)
+  if interpolate then
+    self:_startInterpolation()
+  end
+  self.target = Vector(x, y)
+end
+
+function Camera:setTargetEntity( entity, interpolate )
+  if interpolate then
+    self:_startInterpolation()
+  end
+  self.target = entity
+end
+
+function Camera:getTargetPosition()
+  local target = self.target
+  if Vector:isInstance(target) then
+    return target
+  else
+    return target:getPosition()
+  end
 end
 
 function Camera:update( timeDelta )

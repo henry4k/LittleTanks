@@ -14,6 +14,7 @@ Dependencies
 - [kikito/middleclass](http://github.com/kikito/middleclass)
 - [kikito/anim8](http://github.com/kikito/anim8)
 - [kikito/gamera](http://github.com/kikito/gamera)
+- [kikito/bump.lua](http://github.com/kikito/bump.lua)
 
 
 License and copyright

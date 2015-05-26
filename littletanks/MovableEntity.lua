@@ -18,16 +18,15 @@ function MovableEntity:update( timeDelta )
   Entity.update(self, timeDelta)
 
   local velocity = self.velocity
-  local position = self.position
+  local position = self:getPosition(position)
 
   velocity = velocity + self.force * timeDelta
-
   velocity = velocity * (1 - self.friction * timeDelta)
 
   position = position + velocity * timeDelta
 
-  self.position = position
   self.velocity = velocity
+  self:moveTo(position)
 end
 
 return MovableEntity

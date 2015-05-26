@@ -7,6 +7,8 @@ local Camera = require 'littletanks.Camera'
 local TileMap = require 'littletanks.TileMap'
 local RandomTile = require 'littletanks.RandomTile'
 local LazyTileMapView = require 'littletanks.LazyTileMapView'
+local EntityManager = require 'littletanks.EntityManager'
+local TankAI = require 'littletanks.TankAI'
 
 local Tank = require 'littletanks.Tank'
 local SimpleTankChassis = require 'littletanks.SimpleTankChassis'
@@ -20,7 +22,30 @@ running = false
 camera = nil
 tileMap = nil
 tileMapView = nil
-tank = nil
+entityManager = nil
+aiHoard = {}
+playerTank = nil
+
+function SpawnAiTank()
+  local worldBoundaries = entityManager.worldBoundaries
+  local position = Vector(math.random(worldBoundaries.min[1],
+                                      worldBoundaries.max[1]),
+                          math.random(worldBoundaries.min[2],
+                                      worldBoundaries.max[2]))
+
+  local aiTank = Tank()
+  aiTank.name = 'AI '..(#aiHoard+1)
+  aiTank:setChassis(SimpleTankChassis())
+  aiTank:setTurret(SimpleTankTurret())
+
+  aiTank:teleportTo(position)
+  entityManager:addEntity(aiTank)
+
+  local ai = TankAI(aiTank)
+  ai:setTargetEntity(playerTank)
+
+  table.insert(aiHoard, ai)
+end
 
 function love.load()
   love.graphics.setDefaultFilter('linear', 'nearest')
@@ -41,26 +66,35 @@ function love.load()
   camera = Camera{tileMap=tileMap,
                   tileMapView=tileMapView}
 
-  tank = Tank()
-  tank:setChassis(SimpleTankChassis())
-  tank:setTurret(SimpleTankTurret())
+  local tileMapAabb = tileMap:getBoundaries()
+  local tileMapPixels = tileMapView:tileToPixelAabb(tileMapAabb)
 
-  control.pushControllable(tank)
+  entityManager = EntityManager{worldBoundaries=tileMapPixels,
+                                cellSize=32}
 
-  tank.position = Vector(400, 400)
+  playerTank = Tank()
+  playerTank.name = 'Player'
+  playerTank:setChassis(SimpleTankChassis())
+  playerTank:setTurret(SimpleTankTurret())
+
+  playerTank:teleportTo(Vector(400, 400))
+  entityManager:addEntity(playerTank)
+  control.pushControllable(playerTank)
+
+  SpawnAiTank()
 
   camera:setTargetPosition(10, 10, false)
-  camera:setTargetEntity(tank, true)
-  camera.camera:setScale(1)
+  camera:setTargetEntity(playerTank, true)
+  camera.camera:setScale(2)
 
   local w, h = love.graphics.getDimensions()
   camera.camera:setWindow(w*.25, h*.25, w*.5, h*.5)
 end
 
 function love.quit()
-  tileMap:destroy()
+  entityManager:destroy()
   tileMapView:destroy()
-  tank:destroy()
+  tileMap:destroy()
 end
 
 function love.resize()
@@ -80,26 +114,20 @@ function love.update( timeDelta )
     return
   end
 
-  tank:update(timeDelta)
+  for _, ai in ipairs(aiHoard) do
+    ai:update(timeDelta)
+  end
+  entityManager:update(timeDelta)
   camera:update(timeDelta)
 end
 
 function DRAW_DEBUG_STUFF()
-  tank:draw()
+  entityManager:draw()
   debug2d.drawAabbs()
 end
 
 function love.draw()
-
-  local w, h = love.graphics.getDimensions()
-  love.graphics.setColor(0, 128, 255)
-  love.graphics.setLineWidth(4)
-  love.graphics.rectangle('line', w*.25, h*.25, w*.5, h*.5)
-  love.graphics.setLineWidth(1)
-  love.graphics.setColor(255, 255, 255)
-
   camera:draw()
-
   debug2d.drawText()
 
   if not running then

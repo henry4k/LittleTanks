@@ -18,13 +18,11 @@ end
 local TileMap = class('littletanks.TileMap')
 
 function TileMap:initialize( options )
-  local width    = options.width
-  local height   = options.height
+  assert(options.width and
+         options.height)
 
-  assert(width and height)
-
-  self.width    = width
-  self.height   = height
+  self.width  = options.width
+  self.height = options.height
   self.idToTileMap = {}
   self.tileToIdMap = {}
 
