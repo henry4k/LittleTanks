@@ -15,6 +15,7 @@ local SimpleTankChassis = require 'littletanks.SimpleTankChassis'
 local SimpleTankTurret = require 'littletanks.SimpleTankTurret'
 
 local resources = require 'littletanks.resources'
+local imagefont = require 'imagefont'
 local debug2d = require 'debug2d'
 
 
@@ -50,6 +51,7 @@ end
 function love.load()
   love.graphics.setDefaultFilter('linear', 'nearest')
   resources.load()
+  love.graphics.setFont(imagefont.load())
 
   input.bindVirtualAxis('a', 'd', 'moveX')
   input.bindVirtualAxis('s', 'w', 'moveY')
@@ -70,7 +72,10 @@ function love.load()
   local tileMapPixels = tileMapView:tileToPixelAabb(tileMapAabb)
 
   entityManager = EntityManager{worldBoundaries=tileMapPixels,
-                                cellSize=32}
+                                cellSize=16*1}
+  -- Cell size should be a multiple of the tile size.
+  -- In dense scenarios this should stick to 1,
+  -- in sparse scenarios it can be larger.
 
   playerTank = Tank()
   playerTank.name = 'Player'
@@ -81,7 +86,9 @@ function love.load()
   entityManager:addEntity(playerTank)
   control.pushControllable(playerTank)
 
-  SpawnAiTank()
+  for i=1,5 do
+    SpawnAiTank()
+  end
 
   camera:setTargetPosition(10, 10, false)
   camera:setTargetEntity(playerTank, true)

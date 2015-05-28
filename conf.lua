@@ -1,8 +1,8 @@
 function love.conf( t )
   t.version = '0.9.2'
-  t.identity = 'LoveTest'
+  t.identity = 'LittleTanks'
 
-  t.window.title = 'LoveTest'
+  t.window.title = 'Little Tanks'
   t.window.resizable = true
   t.window.highdpi = true
 
