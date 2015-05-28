@@ -11,7 +11,7 @@ function Tank:initialize()
   MovableEntity.initialize(self)
   self:initializeControllable()
 
-  self:setSize(Vector(16, 16))
+  self:setSize(Vector(14, 8))
 
   self.steering = Vector(0, 0)
   self.friction = 0.9

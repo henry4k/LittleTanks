@@ -1,7 +1,8 @@
 local class = require 'middleclass'
 local bump = require 'bump'
-local debug2d = require 'debug2d'
 local Vector = require 'Vector'
+local Aabb = require 'Aabb'
+local debug2d = require 'debug2d'
 
 
 local EntityManager = class('littletanks.EntityManager')
@@ -17,7 +18,7 @@ end
 
 function EntityManager:destroy()
   for entity, _ in pairs(self.entities) do
-    entity:destroy()
+    self:destroyEntity(entity)
   end
 end
 
@@ -67,6 +68,22 @@ local function FilterColliders( entityA, entityB )
   return 'slide'
 end
 
+function EntityManager:_refineCollisionInfo( collision )
+  -- move: The difference between the original coordinates and the actual ones.
+  -- normal: The collision normal; usually -1,0 or 1 in `x` and `y`
+  -- touch: The coordinates where item started touching other
+
+  local move   = collision.move
+  local normal = collision.normal
+  local touch  = collision.touch
+
+  collision.move = Vector(move.x, move.y)
+  collision.normal = Vector(normal.x, normal.y)
+  collision.touch = Vector(touch.x, touch.y)
+
+  return collision
+end
+
 function EntityManager:_updateEntity( entity, timeDelta )
   local bumpWorld = self.bumpWorld
 
@@ -89,10 +106,12 @@ function EntityManager:_updateEntity( entity, timeDelta )
   end
 
   entity:updatePosition(Vector(actualX, actualY) + topLeftOffset)
+  debug2d.setAabb(entity, 0, 255, 0, entity:getBoundaries())
 
   for _, collision in ipairs(collisions) do
     assert(entity ~= collision.other)
-    entity:onCollision(collision.other)
+    collision = self:_refineCollisionInfo(collision)
+    entity:onCollision(collision)
   end
 end
 

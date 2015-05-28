@@ -5,6 +5,8 @@ local Entity = require 'littletanks.Entity'
 
 local MovableEntity = class('littletanks.MovableEntity', Entity)
 
+MovableEntity.static.minAxisVelocity = 0.001
+
 function MovableEntity:initialize()
   Entity.initialize(self)
 
@@ -18,15 +20,20 @@ function MovableEntity:update( timeDelta )
   Entity.update(self, timeDelta)
 
   local velocity = self.velocity
-  local position = self:getPosition(position)
-
   velocity = velocity + self.force * timeDelta
-  velocity = velocity * (1 - self.friction * timeDelta)
 
-  position = position + velocity * timeDelta
+  local minAxisVelocity = self.class.minAxisVelocity
+  if velocity[1] >= minAxisVelocity or
+     velocity[2] >= minAxisVelocity then
 
-  self.velocity = velocity
-  self:moveTo(position)
+    velocity = velocity * (1 - self.friction * timeDelta)
+
+    local position = self:getPosition(position)
+    position = position + velocity * timeDelta
+
+    self.velocity = velocity
+    self:moveTo(position)
+  end
 end
 
 return MovableEntity

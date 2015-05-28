@@ -63,7 +63,7 @@ function Entity:update( timeDelta )
   -- Nothing to do here (yet)
 end
 
-function Entity:onCollision( other )
+function Entity:onCollision( collision )
   -- Nothing to do here (yet)
 end
 
