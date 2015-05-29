@@ -1,6 +1,5 @@
 local class = require 'middleclass'
 local Vector = require 'Vector'
-local debug2d = require 'debug2d'
 
 
 local EntityManager = class('littletanks.EntityManager')
@@ -25,9 +24,8 @@ function EntityManager:addEntity( entity )
 end
 
 function EntityManager:destroyEntity( entity )
-  self.physicsWorld:removeSolid(entity)
+  self.physicsWorld:destroySolid(entity)
   self.entities[entity] = nil
-  entity:destroy()
 end
 
 local function FilterColliders( entityA, entityB )
@@ -73,7 +71,6 @@ function EntityManager:_updateEntity( entity, timeDelta )
   end
 
   entity:updatePosition(Vector(actualX, actualY) + topLeftOffset)
-  debug2d.setAabb(entity, 0, 255, 0, entity:getBoundaries())
 
   for _, collision in ipairs(collisions) do
     assert(entity ~= collision.other)

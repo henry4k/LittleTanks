@@ -6,7 +6,9 @@
 local input = require 'input'
 local control = require 'control'
 local utils = require 'utils'
+local config = require 'config'
 local Vector = require 'Vector'
+local Aabb = require 'Aabb'
 local Camera = require 'littletanks.Camera'
 local TileMap = require 'littletanks.TileMap'
 local RandomTile = require 'littletanks.RandomTile'
@@ -22,8 +24,15 @@ local SimpleTankTurret = require 'littletanks.SimpleTankTurret'
 
 local resources = require 'littletanks.resources'
 local imagefont = require 'imagefont'
-local debug2d = require 'debug2d'
 
+
+function InitializeConfig()
+  config:set('debug.collisionShapes.color',      Vector(0,1,0))
+  config:set('debug.camera.visiblePixels.color', Vector(1,0,0))
+  config:set('debug.camera.visibleTiles.color',  Vector(1,0,0))
+  config:set('debug.camera.scale', 1)
+end
+InitializeConfig()
 
 running = false
 camera = nil
@@ -105,10 +114,8 @@ function love.load()
 
   camera:setTargetPosition(Vector(10, 10), false)
   camera:setTargetEntity(playerTank, true)
-  camera.camera:setScale(2)
-
-  local w, h = love.graphics.getDimensions()
-  camera.camera:setWindow(w*.25, h*.25, w*.5, h*.5)
+  camera:setScale(2)
+  camera:onWindowResize(Aabb(0, 0, love.graphics.getDimensions()))
 end
 
 function love.quit()
@@ -120,7 +127,7 @@ function love.quit()
 end
 
 function love.resize()
-  --camera:setWindow(0, 0, love.graphics.getDimensions())
+  camera:onWindowResize(Aabb(0, 0, love.graphics.getDimensions()))
 end
 
 function love.focus( hasFocus )
@@ -147,14 +154,11 @@ end
 
 function DRAW_DEBUG_STUFF()
   entityManager:draw()
-  debug2d.drawAabbs()
+  physicsWorld:draw()
 end
 
 function love.draw()
-  debug2d.setValue('avgDelta', love.timer.getAverageDelta())
-  debug2d.setValue('fps', love.timer.getFPS())
   camera:draw()
-  debug2d.drawText()
 
   if not running then
     local x, y = utils.fractionToPixels(0.5, 0.5)

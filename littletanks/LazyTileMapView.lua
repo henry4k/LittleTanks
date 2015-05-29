@@ -1,7 +1,6 @@
 local class = require 'middleclass'
 local Aabb = require 'Aabb'
 local TileMapView = require 'littletanks.TileMapView'
-local debug2d = require 'debug2d'
 
 
 local LazyTileMapView = class('littletanks.LazyTileMapView', TileMapView)
@@ -30,7 +29,6 @@ function LazyTileMapView:set( tileMap, aabb )
                               aabb.max + margin)
     newOuterAabb = tileMap:getBoundaries():intersection(newOuterAabb)
     if not outerAabb:contains(newOuterAabb) then
-      debug2d.setAabb('outerAabb', 0, 255, 0, self:tileToPixelAabb(newOuterAabb))
       self:setOuter(tileMap, newOuterAabb)
     end
   end
