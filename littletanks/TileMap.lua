@@ -1,28 +1,26 @@
 local class = require 'middleclass'
-local Vector = require 'Vector'
 local Aabb = require 'Aabb'
 local EventSource = require 'EventSource'
-local floor = math.floor
 
 
 local function coordsToIndex( x, y, width )
   return y*width + x
 end
 
-local function indexToCoords( index, width )
-  index = index - 1 -- turn into zero based index
-  local x = index % width
-  local y = floor(index / width)
-  return x+1, y+1 -- use one based indices again
-end
-
 local function positionToIndex( position, size )
   return coordsToIndex(position[1], position[2], size[1])
 end
 
-local function indexToPosition( index, size )
-  return Vector(indexToCoords(index, size[1]))
-end
+--local function indexToCoords( index, width )
+--  index = index - 1 -- turn into zero based index
+--  local x = index % width
+--  local y = floor(index / width)
+--  return x+1, y+1 -- use one based indices again
+--end
+--
+--local function indexToPosition( index, size )
+--  return Vector(indexToCoords(index, size[1]))
+--end
 
 
 local TileMap = class('littletanks.TileMap')

@@ -1,8 +1,5 @@
 local class = require 'middleclass'
-local Object = class.Object
-local bump = require 'bump'
 local Vector = require 'Vector'
-local Aabb = require 'Aabb'
 local debug2d = require 'debug2d'
 
 

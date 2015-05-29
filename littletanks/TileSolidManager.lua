@@ -1,4 +1,5 @@
 local class = require 'middleclass'
+local TileSolid = require 'littletanks.TileSolid'
 
 
 local TileSolidManager = class('littletanks.TileSolidManager')
@@ -26,20 +27,22 @@ function TileSolidManager:onTileChange( tilePosition, oldTile, newTile )
   local pixelPosition = self.tileMapView:tileToPixelCoords(tilePosition)
   pixelPosition = pixelPosition + tileSize*0.5 -- move to tile center
 
-  local tileSolid = TileSolid(tile, pixelPosition, tileSize)
-  self:_setTileSolidAt(index, tileSolid)
+  local tileSolid = TileSolid(newTile, pixelPosition, tileSize)
+  self:_setTileSolidAt(tilePosition, tileSolid)
 end
 
-function TileSolidManager:_getTileSolidAt( index )
-  return self.tileSolids[index]
+function TileSolidManager:_getTileSolidAt( position )
+  local positionKey = tostring(position)
+  return self.tileSolids[positionKey]
 end
 
-function TileSolidManager:_setTileSolidAt( index, tileSolid )
-  local oldTileSolid = self.tileSolids[index]
+function TileSolidManager:_setTileSolidAt( position, tileSolid )
+  local positionKey = tostring(position)
+  local oldTileSolid = self.tileSolids[positionKey]
   if oldTileSolid then
     self.physicsWorld:remove(oldTileSolid)
   end
-  self.tileSolids[index] = tileSolid
+  self.tileSolids[positionKey] = tileSolid
   if tileSolid then
     self.physicsWorld:add(tileSolid)
   end

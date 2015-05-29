@@ -1,6 +1,4 @@
 local class = require 'middleclass'
-local Vector = require 'Vector'
-local Aabb = require 'Aabb'
 local Solid = require 'littletanks/Solid'
 
 

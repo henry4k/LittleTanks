@@ -4,8 +4,6 @@ local mix = require 'mix'
 local Vector = require 'Vector'
 local Aabb = require 'Aabb'
 local getTime = love.timer.getTime
-local floor = math.floor
-local ceil = math.ceil
 local debug2d = require 'debug2d'
 
 
@@ -97,7 +95,6 @@ function Camera:update( timeDelta )
   if stopInterpolation then
     self.interpolationStartTime = nil
   end
-  local camera = self.camera
   self.camera:setPosition(position:unpack(2))
 end
 

@@ -1,8 +1,5 @@
 local class = require 'middleclass'
 local bump = require 'bump'
-local Vector = require 'Vector'
-local Aabb = require 'Aabb'
-local debug2d = require 'debug2d'
 
 
 local PhysicsWorld = class('littletanks.PhysicsWorld')

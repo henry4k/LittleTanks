@@ -7,7 +7,6 @@ local input = require 'input'
 local control = require 'control'
 local utils = require 'utils'
 local Vector = require 'Vector'
-local Aabb = require 'Aabb'
 local Camera = require 'littletanks.Camera'
 local TileMap = require 'littletanks.TileMap'
 local RandomTile = require 'littletanks.RandomTile'
@@ -23,7 +22,6 @@ local SimpleTankTurret = require 'littletanks.SimpleTankTurret'
 
 local resources = require 'littletanks.resources'
 local imagefont = require 'imagefont'
-local bump = require 'bump'
 local debug2d = require 'debug2d'
 
 
@@ -101,9 +99,9 @@ function love.load()
   entityManager:addEntity(playerTank)
   control.pushControllable(playerTank)
 
-  for i=1,5 do
-    SpawnAiTank()
-  end
+  --for i=1,5 do
+  --  SpawnAiTank()
+  --end
 
   camera:setTargetPosition(Vector(10, 10), false)
   camera:setTargetEntity(playerTank, true)
