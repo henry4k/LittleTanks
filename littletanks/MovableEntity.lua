@@ -1,6 +1,7 @@
 local class = require 'middleclass'
 local Vector = require 'Vector'
 local Entity = require 'littletanks.Entity'
+local abs = math.abs
 
 
 local MovableEntity = class('littletanks.MovableEntity', Entity)
@@ -23,8 +24,8 @@ function MovableEntity:update( timeDelta )
   velocity = velocity + self.force * timeDelta
 
   local minAxisVelocity = self.class.minAxisVelocity
-  if velocity[1] >= minAxisVelocity or
-     velocity[2] >= minAxisVelocity then
+  if abs(velocity[1]) >= minAxisVelocity or
+     abs(velocity[2]) >= minAxisVelocity then
 
     velocity = velocity * (1 - self.friction * timeDelta)
 
