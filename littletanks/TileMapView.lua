@@ -56,6 +56,9 @@ function TileMapView:pixelToTileAabb( aabb, snapMethod )
 end
 
 function TileMapView:set( tileMap, aabb )
+  assert(tileMap:getBoundaries():contains(aabb),
+         'Requested area exceeds tile map.')
+
   local tileWidth   = self.tileWidth
   local tileHeight  = self.tileHeight
   local atlasGrid   = self.atlasGrid
