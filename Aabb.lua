@@ -13,6 +13,9 @@ function Aabb:initialize( ... )
     self.min = Vector(args[1], args[2])
     self.max = Vector(args[3], args[4])
   elseif #args == 2 then
+    assert(Vector:isInstance(args[1]) and
+           Vector:isInstance(args[2]),
+           'Expected 2 vector arguments.')
     self.min = args[1]
     self.max = args[2]
   else

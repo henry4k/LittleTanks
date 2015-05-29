@@ -1,4 +1,5 @@
 local class = require 'middleclass'
+local Object = class.Object
 local bump = require 'bump'
 local Vector = require 'Vector'
 local Aabb = require 'Aabb'
@@ -8,11 +9,9 @@ local debug2d = require 'debug2d'
 local EntityManager = class('littletanks.EntityManager')
 
 function EntityManager:initialize( options )
-  assert(options.worldBoundaries and
-         options.cellSize)
+  assert(options.physicsWorld)
 
-  self.worldBoundaries = options.worldBoundaries
-  self.bumpWorld = bump.newWorld(options.cellSize)
+  self.physicsWorld = options.physicsWorld
   self.entities = {}
 end
 
@@ -23,44 +22,15 @@ function EntityManager:destroy()
 end
 
 function EntityManager:addEntity( entity )
-  local topLeft = entity:getTopLeft()
-  local size    = entity:getSize()
-  self.bumpWorld:add(entity,
-                     topLeft[1],
-                     topLeft[2],
-                     size[1],
-                     size[2])
+  self.physicsWorld:addSolid(entity, entity:getBoundaries())
   self.entities[entity] = true
   entity:updatePosition(entity:getPosition())
 end
 
 function EntityManager:destroyEntity( entity )
-  self.bumpWorld:remove(entity)
+  self.physicsWorld:removeSolid(entity)
   self.entities[entity] = nil
   entity:destroy()
-end
-
-function EntityManager:getEntitiesAt( position, filter )
-  return self.bumpWorld:queryPoint(position[1],
-                                   position[2],
-                                   filter)
-end
-
-function EntityManager:getEntitiesIn( aabb, filter )
-  local aabbSize = aabb:size()
-  return self.bumpWorld:queryRect(aabb.min[1],
-                                  aabb.min[2],
-                                  aabbSize[1],
-                                  aabbSize[2],
-                                  filter)
-end
-
-function EntityManager:getEntitiesAlong( lineStart, lineEnd, filter )
-  return self.bumpWorld:querySegment(lineStart[1],
-                                     lineStart[2],
-                                     lineEnd[1],
-                                     lineEnd[2],
-                                     filter)
 end
 
 local function FilterColliders( entityA, entityB )
@@ -85,7 +55,7 @@ function EntityManager:_refineCollisionInfo( collision )
 end
 
 function EntityManager:_updateEntity( entity, timeDelta )
-  local bumpWorld = self.bumpWorld
+  local bumpWorld = self.physicsWorld.bumpWorld -- TODO
 
   entity:update(timeDelta)
 
@@ -116,14 +86,12 @@ function EntityManager:_updateEntity( entity, timeDelta )
 end
 
 function EntityManager:update( timeDelta )
-  local bumpWorld = self.bumpWorld
   for entity, _ in pairs(self.entities) do
     self:_updateEntity(entity, timeDelta)
   end
 end
 
 function EntityManager:draw()
-  local bumpWorld = self.bumpWorld
   -- TODO: Sort entities by y position
   for entity, _ in pairs(self.entities) do
     entity:draw()

@@ -25,7 +25,7 @@ function Camera:initialize( options )
       self:_internalDraw(...)
     end
 
-  self:setTargetPosition(0, 0, false)
+  self:setTargetPosition(Vector(0, 0), false)
   self:update(0)
 end
 
@@ -69,11 +69,11 @@ function Camera:_startInterpolation()
   self.interpolationStartTime = getTime()
 end
 
-function Camera:setTargetPosition( x, y, interpolate )
+function Camera:setTargetPosition( position, interpolate )
   if interpolate then
     self:_startInterpolation()
   end
-  self.target = Vector(x, y)
+  self.target = position
 end
 
 function Camera:setTargetEntity( entity, interpolate )

@@ -1,9 +1,11 @@
 local class = require 'middleclass'
+local Vector = require 'Vector'
 local Aabb = require 'Aabb'
+local EventSource = require 'EventSource'
 local floor = math.floor
 
 
-local function coordToIndex( x, y, width )
+local function coordsToIndex( x, y, width )
   return y*width + x
 end
 
@@ -14,15 +16,24 @@ local function indexToCoords( index, width )
   return x+1, y+1 -- use one based indices again
 end
 
+local function positionToIndex( position, size )
+  return coordsToIndex(position[1], position[2], size[1])
+end
+
+local function indexToPosition( index, size )
+  return Vector(indexToCoords(index, size[1]))
+end
+
 
 local TileMap = class('littletanks.TileMap')
+TileMap:include(EventSource)
 
 function TileMap:initialize( options )
-  assert(options.width and
-         options.height)
+  self:initializeEventSource()
 
-  self.width  = options.width
-  self.height = options.height
+  assert(options.size)
+
+  self.boundaries = Aabb(1, 1, options.size:unpack(2))
   self.idToTileMap = {}
   self.tileToIdMap = {}
 
@@ -31,20 +42,15 @@ end
 
 function TileMap:destroy()
   -- Nothing to do here (yet)
+  self:destroyEventSource()
 end
 
 function TileMap:_initializeMap()
-  local width  = self.width
-  local height = self.height
   local map = {}
-
-  for y = 1, height do
-  for x = 1, width do
-    local index = coordToIndex(x, y, width)
+  local size = self.boundaries:size()
+  for index=1,size[1]*size[2] do
     map[index] = 1
   end
-  end
-
   self.map = map
 end
 
@@ -54,32 +60,31 @@ function TileMap:registerTile( tile )
   self.tileToIdMap[tile] = #self.idToTileMap
 end
 
-function TileMap:getDimensions()
-  return self.width, self.height
-end
-
 function TileMap:getBoundaries()
-  return Aabb(1, 1, self.width, self.height)
+  return self.boundaries
 end
 
-function TileMap:isInBounds( x, y )
-  return x >= 1 and x <= self.width and
-         y >= 1 and y <= self.height
+function TileMap:isInBounds( position )
+  return self.boundaries:contains(position)
 end
 
-function TileMap:at( x, y )
-  if self:isInBounds(x,y) then
-    local index = coordToIndex(x, y, self.width)
+function TileMap:at( position )
+  if self:isInBounds(position) then
+    local index = positionToIndex(position, self.boundaries:size())
     local tileId = self.map[index]
     return self.idToTileMap[tileId]
   end
 end
 
-function TileMap:setAt( x, y, tile )
-  assert(self:isInBounds(x, y, 'Out of bounds!'))
-  local index = coordToIndex(x, y, self.width)
+function TileMap:setAt( position, tile )
+  assert(self:isInBounds(position), 'Out of bounds!')
+  local index = positionToIndex(position, self.boundaries:size())
   local tileId = self.tileToIdMap[tile]
-  self.map[index] = id
+  local oldTile = self.idToTileMap[self.map[index]]
+
+  self.map[index] = tileId
+
+  self:fireEvent('tileChanged', position, oldTile, tile)
 end
 
 return TileMap

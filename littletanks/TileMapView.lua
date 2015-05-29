@@ -67,8 +67,9 @@ function TileMapView:set( tileMap, aabb )
 
   for yOffset = 0, height-1 do
   for xOffset = 0,  width-1 do
-    local tile = tileMap:at(xStart+xOffset,
-                            yStart+yOffset)
+    local tilePosition = Vector(xStart+xOffset,
+                                yStart+yOffset)
+    local tile = tileMap:at(tilePosition)
     local atlasX, atlasY = tile:getAtlasCoords()
     local quad = atlasGrid:getFrames(atlasX, atlasY)[1]
     spriteBatch:add(quad, tileWidth*xOffset, tileHeight*yOffset)

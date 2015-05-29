@@ -1,3 +1,8 @@
+--jit.off()
+--jit.flush()
+--require 'luacov'
+--local luatrace = require 'luatrace'
+
 local input = require 'input'
 local control = require 'control'
 local utils = require 'utils'
@@ -7,6 +12,8 @@ local Camera = require 'littletanks.Camera'
 local TileMap = require 'littletanks.TileMap'
 local RandomTile = require 'littletanks.RandomTile'
 local LazyTileMapView = require 'littletanks.LazyTileMapView'
+local PhysicsWorld = require 'littletanks.PhysicsWorld'
+local TileSolidManager = require 'littletanks.TileSolidManager'
 local EntityManager = require 'littletanks.EntityManager'
 local TankAI = require 'littletanks.TankAI'
 
@@ -16,6 +23,7 @@ local SimpleTankTurret = require 'littletanks.SimpleTankTurret'
 
 local resources = require 'littletanks.resources'
 local imagefont = require 'imagefont'
+local bump = require 'bump'
 local debug2d = require 'debug2d'
 
 
@@ -23,12 +31,14 @@ running = false
 camera = nil
 tileMap = nil
 tileMapView = nil
+physicsWorld = nil
+tileSolidManager = nil
 entityManager = nil
 aiHoard = {}
 playerTank = nil
 
 function SpawnAiTank()
-  local worldBoundaries = entityManager.worldBoundaries
+  local worldBoundaries = physicsWorld.worldBoundaries
   local position = Vector(math.random(worldBoundaries.min[1],
                                       worldBoundaries.max[1]),
                           math.random(worldBoundaries.min[2],
@@ -56,8 +66,7 @@ function love.load()
   input.bindVirtualAxis('a', 'd', 'moveX')
   input.bindVirtualAxis('s', 'w', 'moveY')
 
-  tileMap = TileMap{width=40,
-                    height=40}
+  tileMap = TileMap{size=Vector(40, 40)}
 
   local randomTile = RandomTile(3, 2)
   tileMap:registerTile(randomTile)
@@ -65,17 +74,23 @@ function love.load()
   tileMapView = LazyTileMapView(resources['littletanks/tiles.png'], 16)
   tileMapView:setMargin(4)
 
-  camera = Camera{tileMap=tileMap,
-                  tileMapView=tileMapView}
-
   local tileMapAabb = tileMap:getBoundaries()
   local tileMapPixels = tileMapView:tileToPixelAabb(tileMapAabb)
 
-  entityManager = EntityManager{worldBoundaries=tileMapPixels,
-                                cellSize=16*1}
+  physicsWorld = PhysicsWorld{cellSize=16*1,
+                              worldBoundaries=tileMapPixels}
   -- Cell size should be a multiple of the tile size.
   -- In dense scenarios this should stick to 1,
   -- in sparse scenarios it can be larger.
+
+  tileSolidManager = TileSolidManager{tileMap=tileMap,
+                                      tileMapView=tileMapView,
+                                      physicsWorld=physicsWorld}
+
+  camera = Camera{tileMap=tileMap,
+                  tileMapView=tileMapView}
+
+  entityManager = EntityManager{physicsWorld=physicsWorld}
 
   playerTank = Tank()
   playerTank.name = 'Player'
@@ -90,7 +105,7 @@ function love.load()
     SpawnAiTank()
   end
 
-  camera:setTargetPosition(10, 10, false)
+  camera:setTargetPosition(Vector(10, 10), false)
   camera:setTargetEntity(playerTank, true)
   camera.camera:setScale(2)
 
@@ -100,6 +115,8 @@ end
 
 function love.quit()
   entityManager:destroy()
+  tileSolidManager:destroy()
+  physicsWorld:destroy()
   tileMapView:destroy()
   tileMap:destroy()
 end
@@ -124,7 +141,9 @@ function love.update( timeDelta )
   for _, ai in ipairs(aiHoard) do
     ai:update(timeDelta)
   end
+  --luatrace.tron()
   entityManager:update(timeDelta)
+  --luatrace.troff()
   camera:update(timeDelta)
 end
 
@@ -134,6 +153,8 @@ function DRAW_DEBUG_STUFF()
 end
 
 function love.draw()
+  debug2d.setValue('avgDelta', love.timer.getAverageDelta())
+  debug2d.setValue('fps', love.timer.getFPS())
   camera:draw()
   debug2d.drawText()
 
