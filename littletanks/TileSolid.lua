@@ -11,6 +11,8 @@ function TileSolid:initialize( tile, position, tileSize )
   self.tile = tile
 end
 
-function Solid:getCollisionCategories()
+function TileSolid:getCollisionCategories()
   return self.tile.getCollisionCategories()
 end
+
+return TileSolid

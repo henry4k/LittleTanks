@@ -18,7 +18,7 @@ function EntityManager:destroy()
 end
 
 function EntityManager:addEntity( entity )
-  self.physicsWorld:addSolid(entity, entity:getBoundaries())
+  self.physicsWorld:addSolid(entity)
   self.entities[entity] = true
   entity:updatePosition(entity:getPosition())
 end

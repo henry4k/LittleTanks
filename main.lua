@@ -11,7 +11,7 @@ local Vector = require 'Vector'
 local Aabb = require 'Aabb'
 local Camera = require 'littletanks.Camera'
 local TileMap = require 'littletanks.TileMap'
-local RandomTile = require 'littletanks.RandomTile'
+local Tile = require 'littletanks.Tile'
 local LazyTileMapView = require 'littletanks.LazyTileMapView'
 local PhysicsWorld = require 'littletanks.PhysicsWorld'
 local TileSolidManager = require 'littletanks.TileSolidManager'
@@ -31,6 +31,8 @@ function InitializeConfig()
   config:set('debug.camera.visiblePixels.color', Vector(1,0,0))
   config:set('debug.camera.visibleTiles.color',  Vector(1,0,0))
   config:set('debug.camera.scale', 1)
+
+  config:set('debug.collisionShapes.show', true)
 end
 InitializeConfig()
 
@@ -75,8 +77,10 @@ function love.load()
 
   tileMap = TileMap{size=Vector(40, 40)}
 
-  local randomTile = RandomTile(3, 2)
-  tileMap:registerTile(randomTile)
+  local groundTile   = Tile{ atlasX=1, atlasY=1 }
+  local mountainTile = Tile{ atlasX=2, atlasY=1 }
+  tileMap:registerTile(groundTile)
+  tileMap:registerTile(mountainTile)
 
   tileMapView = LazyTileMapView(resources['littletanks/tiles.png'], 16)
   tileMapView:setMargin(4)
@@ -93,6 +97,8 @@ function love.load()
   tileSolidManager = TileSolidManager{tileMap=tileMap,
                                       tileMapView=tileMapView,
                                       physicsWorld=physicsWorld}
+
+  tileMap:setAt(Vector(23, 23), mountainTile)
 
   camera = Camera{tileMap=tileMap,
                   tileMapView=tileMapView}

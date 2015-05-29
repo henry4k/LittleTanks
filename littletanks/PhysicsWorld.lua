@@ -1,6 +1,7 @@
 local class = require 'middleclass'
-local config = require 'config'
 local bump = require 'bump'
+local config = require 'config'
+local debugtools = require 'debugtools'
 
 
 local PhysicsWorld = class('littletanks.PhysicsWorld')
@@ -20,8 +21,9 @@ function PhysicsWorld:destroy()
   end
 end
 
-function PhysicsWorld:addSolid( solid, aabb )
+function PhysicsWorld:addSolid( solid )
   assert(not self.solids[solid], 'Solid has already been added.')
+  local aabb = solid:getBoundaries()
   local min = aabb.min
   local size = aabb:size()
   self.bumpWorld:add(solid,
@@ -65,15 +67,10 @@ end
 
 function PhysicsWorld:draw()
   if config:get('debug.collisionShapes.show') then
-    local color = config:get('debug.collisionShapes.color')
-    love.graphics.setColor(color:unpack(3))
     for solid, _ in pairs(self.solids) do
       local boundaries = solid:getBoundaries()
-      love.graphics.rectangle('line', boundaries.min[1],
-                                      boundaries.min[2],
-                                      boundaries:size():unpack(2))
+      debugtools.drawAabb(boundaries, 'debug.collisionShapes.color')
     end
-    love.graphics.setColor(255, 255, 255)
   end
 end
 

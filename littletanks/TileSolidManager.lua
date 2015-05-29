@@ -14,11 +14,11 @@ function TileSolidManager:initialize( options )
   self.physicsWorld = options.physicsWorld
 
   self.tileSolids = {} -- sparse array
-  self.tileMap:addEventTarget('tileChange', self, self.onTileChange)
+  self.tileMap:addEventTarget('tileChanged', self, self.onTileChange)
 end
 
 function TileSolidManager:destroy()
-  self.tileMap:removeEventTarget('tileChange', self)
+  self.tileMap:removeEventTarget('tileChanged', self)
 end
 
 function TileSolidManager:onTileChange( tilePosition, oldTile, newTile )
@@ -40,11 +40,11 @@ function TileSolidManager:_setTileSolidAt( position, tileSolid )
   local positionKey = tostring(position)
   local oldTileSolid = self.tileSolids[positionKey]
   if oldTileSolid then
-    self.physicsWorld:remove(oldTileSolid)
+    self.physicsWorld:removeSolid(oldTileSolid)
   end
   self.tileSolids[positionKey] = tileSolid
   if tileSolid then
-    self.physicsWorld:add(tileSolid)
+    self.physicsWorld:addSolid(tileSolid)
   end
 end
 

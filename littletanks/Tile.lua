@@ -3,14 +3,21 @@ local class = require 'middleclass'
 
 local Tile = class('littletanks.Tile')
 
-local defaultCollisionCategories = {}
+function Tile:initialize( options )
+  assert(options.atlasX and
+         options.atlasY)
+  self.atlasX = options.atlasX
+  self.atlasY = options.atlasY
+  self.collisionCategories = {}
+end
 
 function Tile:getCollisionCategories()
-  return defaultCollisionCategories
+  return self.collisionCategories
 end
 
 function Tile:getAtlasCoords()
-  error('Method not implemented.')
+  return self.atlasX,
+         self.atlasY
 end
 
 return Tile
