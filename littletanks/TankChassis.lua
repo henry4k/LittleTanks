@@ -20,4 +20,8 @@ function TankChassis:draw()
   error('Missing implementation.')
 end
 
+function TankChassis:onTankRotation( angle )
+  -- Nothing to do here (yet).
+end
+
 return TankChassis

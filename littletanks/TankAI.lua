@@ -46,7 +46,7 @@ function TankAI:update( timeDelta )
     local distance = offset:length()
     if distance > self.minTargetDistance then
       local direction = self:getTargetOffset():normalize()
-      self.tank.steering = direction
+      self.tank:setSteering(direction)
     --else
     --  self:unsetTarget()
     --  self.tank.steering = Vector(0, 0)

@@ -128,12 +128,19 @@ function Vector.prototype:normalize()
     return result
 end
 
-function Vector.prototype:__index( key )
-    if type(key) == 'number' then
-        return 0
-    else
-        return nil
+function Vector.prototype:dot( other )
+    local result = 0
+    for i = 1, max(#self, #other) do
+        result = result + self[i] * other[i]
     end
+    return result
+end
+
+function Vector.prototype:cross( other )
+  assert(#self == 3 and #other == 3, 'Both vectors must have 3 components.')
+  return Vector(self[2]*other[3] - self[2]*other[3],
+                self[3]*other[1] - self[3]*other[1],
+                self[1]*other[2] - self[1]*other[2])
 end
 
 --- Test two vectors for equality.

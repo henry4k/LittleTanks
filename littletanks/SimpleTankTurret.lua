@@ -6,33 +6,49 @@ local TankTurret = require 'littletanks.TankTurret'
 
 local SimpleTankTurret = class('littletanks.SimpleTankTurret', TankTurret)
 
-function SimpleTankTurret:initialize()
-  TankTurret.initialize(self)
+function SimpleTankTurret.static:initializeStatic()
+  if self.initializedStatic then
+    return
+  end
 
   local image = resources['littletanks/tank.png']
   self.image = image
 
-  local grid = anim8.newGrid(11,
-                             8,
+  local grid = anim8.newGrid(14,
+                             10,
                              image:getWidth(),
                              image:getHeight(),
                              0,
-                             11)
+                             80)
+  self.animationPresets = {
+    [0]   = { frames = grid:getFrames(1,1) },
+    [45]  = { frames = grid:getFrames(1,2) },
+    [90]  = { frames = grid:getFrames(1,3) },
+    [135] = { frames = grid:getFrames(1,4) },
+    [180] = { frames = grid:getFrames(1,5) }
+  }
 
-  local frames = grid:getFrames('1-2', 1)
-  local animation = anim8.newAnimation(frames, 0.3)
+  self.initializedStatic = true
+end
 
-  self.animation = animation
+function SimpleTankTurret:initialize()
+  TankTurret.initialize(self)
+  SimpleTankTurret:initializeStatic()
+  self:setAnimation(0)
 end
 
 function SimpleTankTurret:update( timeDelta )
   TankTurret.update(self, timeDelta)
-
   self.animation:update(timeDelta)
 end
 
 function SimpleTankTurret:draw()
-  self.animation:draw(self.image, -4, -6)
+  self.animation:draw(self.image, -7, -5)
+end
+
+function SimpleTankTurret:setAnimation( name )
+  local preset = self.animationPresets[name]
+  self.animation = anim8.newAnimation(preset.frames, 0.3)
 end
 
 return SimpleTankTurret
