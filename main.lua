@@ -17,6 +17,9 @@ local PhysicsWorld = require 'littletanks.PhysicsWorld'
 local TileSolidManager = require 'littletanks.TileSolidManager'
 local EntityManager = require 'littletanks.EntityManager'
 local TankAI = require 'littletanks.TankAI'
+local GUIButton = require 'littletanks.gui.Button'
+local GUIMenu = require 'littletanks.gui.Menu'
+local GUIController = require 'littletanks.gui.Controller'
 
 local Tank = require 'littletanks.Tank'
 local SimpleTankChassis = require 'littletanks.SimpleTankChassis'
@@ -45,6 +48,29 @@ tileSolidManager = nil
 entityManager = nil
 aiHoard = {}
 playerTank = nil
+guiController = nil
+
+function SetupMenu()
+  guiController = GUIController()
+  control.pushControllable(guiController)
+
+  local menu = GUIMenu('Das Menue')
+  menu:addEntry(GUIButton('Button 1', 'Button1 pressed', print))
+  menu:addEntry(GUIButton('Button 2', 'Button2 pressed', print))
+  menu:addEntry(GUIButton('Button 3', 'Button3 pressed', print))
+
+  guiController:pushMenu(menu)
+end
+
+function SetupFrames()
+  local texture = resources['littletanks/gui.png']
+  texturedFrame = TexturedFrame{textureSize = Vector(texture:getDimensions()),
+                                outerFrame = Aabb(10, 10, 50, 50),
+                                innerFrame = Aabb(20, 20, 40, 40),
+                                stretch = false}
+  frameSpriteBatch = love.graphics.newSpriteBatch(texture)
+  texturedFrame:generate(frameSpriteBatch, Aabb(100, 100, 150, 150))
+end
 
 function SpawnAiTank()
   local worldBoundaries = physicsWorld.worldBoundaries
@@ -74,6 +100,7 @@ function love.load()
 
   input.bindVirtualAxis('a', 'd', 'moveX')
   input.bindVirtualAxis('s', 'w', 'moveY')
+  input.bind('f', 'fire')
 
   tileMap = TileMap{size=Vector(40, 40)}
 
@@ -122,6 +149,8 @@ function love.load()
   camera:setTargetEntity(playerTank, true)
   camera:setScale(2)
   camera:onWindowResize(Aabb(0, 0, love.graphics.getDimensions()))
+
+  SetupMenu()
 end
 
 function love.quit()
@@ -165,6 +194,7 @@ end
 
 function love.draw()
   camera:draw()
+  guiController:draw(Vector(love.graphics.getDimensions()))
 
   if not running then
     local x, y = utils.fractionToPixels(0.5, 0.5)
