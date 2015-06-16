@@ -7,8 +7,8 @@ function love.conf( t )
   t.window.highdpi = true
 
   t.window.display = 2
-  t.window.width = 400
-  t.window.height = 300
+  t.window.width = 200
+  t.window.height = 200
 
   t.modules.joystick = false
   t.modules.physics = false

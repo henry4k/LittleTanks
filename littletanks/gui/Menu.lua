@@ -43,26 +43,17 @@ function GUIMenu:getSize()
   return size
 end
 
-function GUIMenu:draw()
-  local translate = love.graphics.translate
-  local push      = love.graphics.push
-  local pop       = love.graphics.pop
-
+function GUIMenu:draw( origin )
   local size = self:getSize()
 
   local margin = self.entryMargin
-  local yOffset = -size[2]/2
+  local position = origin + Vector(0, -size[2]/2)
   for _, entry in ipairs(self.entries) do
     local entrySize = entry:getSize()
 
-    yOffset = yOffset + (entrySize[2]/2) -- move to center of entry
-
-    push()
-    translate(0, yOffset)
-    entry:draw()
-    pop()
-
-    yOffset = yOffset + (entrySize[2]/2) + margin
+    position[2] = position[2] + entrySize[2]/2 -- move to center of entry
+    entry:draw(position)
+    position[2] = position[2] + entrySize[2]/2 + margin
   end
 end
 

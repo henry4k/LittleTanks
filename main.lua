@@ -9,17 +9,20 @@ local utils = require 'utils'
 local config = require 'config'
 local Vector = require 'Vector'
 local Aabb = require 'Aabb'
+local AtlasImage = require 'littletanks.AtlasImage'
 local Camera = require 'littletanks.Camera'
 local TileMap = require 'littletanks.TileMap'
+local TileMapGenerator = require 'littletanks.TileMapGenerator'
 local Tile = require 'littletanks.Tile'
 local LazyTileMapView = require 'littletanks.LazyTileMapView'
 local PhysicsWorld = require 'littletanks.PhysicsWorld'
 local TileSolidManager = require 'littletanks.TileSolidManager'
+local EntityView = require 'littletanks.EntityView'
 local EntityManager = require 'littletanks.EntityManager'
 local TankAI = require 'littletanks.TankAI'
-local GUIButton = require 'littletanks.gui.Button'
-local GUIMenu = require 'littletanks.gui.Menu'
-local GUIController = require 'littletanks.gui.Controller'
+--local GUIButton = require 'littletanks.gui.Button'
+--local GUIMenu = require 'littletanks.gui.Menu'
+--local GUIController = require 'littletanks.gui.Controller'
 
 local Tank = require 'littletanks.Tank'
 local SimpleTankChassis = require 'littletanks.SimpleTankChassis'
@@ -35,7 +38,7 @@ function InitializeConfig()
   config:set('debug.camera.visibleTiles.color',  Vector(1,0,0))
   config:set('debug.camera.scale', 1)
 
-  config:set('debug.collisionShapes.show', true)
+  --config:set('debug.collisionShapes.show', true)
 end
 InitializeConfig()
 
@@ -48,28 +51,13 @@ tileSolidManager = nil
 entityManager = nil
 aiHoard = {}
 playerTank = nil
-guiController = nil
 
-function SetupMenu()
-  guiController = GUIController()
-  control.pushControllable(guiController)
-
-  local menu = GUIMenu('Das Menue')
-  menu:addEntry(GUIButton('Button 1', 'Button1 pressed', print))
-  menu:addEntry(GUIButton('Button 2', 'Button2 pressed', print))
-  menu:addEntry(GUIButton('Button 3', 'Button3 pressed', print))
-
-  guiController:pushMenu(menu)
-end
-
-function SetupFrames()
-  local texture = resources['littletanks/gui.png']
-  texturedFrame = TexturedFrame{textureSize = Vector(texture:getDimensions()),
-                                outerFrame = Aabb(10, 10, 50, 50),
-                                innerFrame = Aabb(20, 20, 40, 40),
-                                stretch = false}
-  frameSpriteBatch = love.graphics.newSpriteBatch(texture)
-  texturedFrame:generate(frameSpriteBatch, Aabb(100, 100, 150, 150))
+function CreateEntityAtlasImage()
+  local atlasImage = AtlasImage(resources['littletanks/entities.png'])
+  atlasImage:setQuadStrip('TankDriveNorth', Aabb(0, 0, 16, 16), 2)
+  assert(atlasImage:getQuad('TankDriveNorth1'))
+  assert(atlasImage:getQuad('TankDriveNorth2'))
+  return atlasImage
 end
 
 function SpawnAiTank()
@@ -102,14 +90,20 @@ function love.load()
   input.bindVirtualAxis('s', 'w', 'moveY')
   input.bind('f', 'fire')
 
-  tileMap = TileMap{size=Vector(40, 40)}
+  local tileMapGenerator = TileMapGenerator(1) -- seed
+
+  tileMap = TileMap{size=Vector(40, 40),
+                    generator=tileMapGenerator}
 
   local groundTile   = Tile{ atlasX=1, atlasY=1 }
   local mountainTile = Tile{ atlasX=2, atlasY=1 }
   tileMap:registerTile(groundTile)
   tileMap:registerTile(mountainTile)
 
-  tileMapView = LazyTileMapView(resources['littletanks/tiles.png'], 16)
+  tileMapView = LazyTileMapView{tileMap = tileMap,
+                                image = resources['littletanks/tiles.png'],
+                                tileWidth = 16,
+                                tileHeight = 16}
   tileMapView:setMargin(4)
 
   local tileMapAabb = tileMap:getBoundaries()
@@ -127,10 +121,14 @@ function love.load()
 
   tileMap:setAt(Vector(23, 23), mountainTile)
 
-  camera = Camera{tileMap=tileMap,
-                  tileMapView=tileMapView}
-
   entityManager = EntityManager{physicsWorld=physicsWorld}
+
+  local entityView = EntityView{entityManager=entityManager,
+                                atlasImage=CreateEntityAtlasImage()}
+
+  camera = Camera{tileMap=tileMap,
+                  tileMapView=tileMapView,
+                  entityView=entityView}
 
   playerTank = Tank()
   playerTank.name = 'Player'

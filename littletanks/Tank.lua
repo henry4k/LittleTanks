@@ -46,7 +46,7 @@ end
 function Tank:update( timeDelta )
   self.force = self._direction * (self._throttle * 40)
 
-  self.chassis:update(timeDelta)
+  self.chassis:update(timeDelta, self)
   self.turret:update(timeDelta)
   MovableEntity.update(self, timeDelta)
 end

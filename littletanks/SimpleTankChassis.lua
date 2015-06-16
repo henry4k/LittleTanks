@@ -17,11 +17,11 @@ function SimpleTankChassis.static:initializeStatic()
 
   local grid = anim8.newGrid(16, 16, image:getDimensions())
   self.animationPresets = {
-    [0]   = { frames = grid:getFrames(1,1), turretAttachmentPoint = Vector(0, 0) },
-    [45]  = { frames = grid:getFrames(1,2), turretAttachmentPoint = Vector(0, 0) },
-    [90]  = { frames = grid:getFrames(1,3), turretAttachmentPoint = Vector(0, 0) },
-    [135] = { frames = grid:getFrames(1,4), turretAttachmentPoint = Vector(0, 0) },
-    [180] = { frames = grid:getFrames(1,5), turretAttachmentPoint = Vector(0, 0) }
+    [0]   = { frames = grid:getFrames(1,1, 2,1), turretAttachmentPoint = Vector(0, 0) },
+    [45]  = { frames = grid:getFrames(1,2, 2,2), turretAttachmentPoint = Vector(0, 0) },
+    [90]  = { frames = grid:getFrames(1,3, 2,3), turretAttachmentPoint = Vector(0, 0) },
+    [135] = { frames = grid:getFrames(1,4, 2,4), turretAttachmentPoint = Vector(0, 0) },
+    [180] = { frames = grid:getFrames(1,5, 2,5), turretAttachmentPoint = Vector(0, 0) }
   }
 
   self.initializedStatic = true
@@ -33,9 +33,10 @@ function SimpleTankChassis:initialize()
   self:setAnimation(0)
 end
 
-function SimpleTankChassis:update( timeDelta )
+function SimpleTankChassis:update( timeDelta, tank )
   TankChassis.update(self, timeDelta)
-  self.animation:update(timeDelta)
+  --self.animation:setDurations()
+  self.animation:update(timeDelta * tank.velocity:length())
 end
 
 function SimpleTankChassis:draw()
@@ -57,7 +58,7 @@ end
 
 function SimpleTankChassis:setAnimation( name )
   local preset = self.animationPresets[name]
-  self.animation = anim8.newAnimation(preset.frames, 0.3)
+  self.animation = anim8.newAnimation(preset.frames, 0.1)
   self.turretAttachmentPoint = preset.turretAttachmentPoint
 end
 
