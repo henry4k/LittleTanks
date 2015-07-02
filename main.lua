@@ -36,6 +36,8 @@ function InitializeConfig()
   config:set('debug.camera.scale', 1)
 
   config:set('debug.collisionShapes.show', true)
+
+  config:set('debug.fps', true)
 end
 InitializeConfig()
 
@@ -141,9 +143,9 @@ function love.load()
   entityManager:addEntity(playerTank)
   control.pushControllable(playerTank)
 
-  --for i=1,5 do
-  --  SpawnAiTank()
-  --end
+  for i=1,1000 do
+    SpawnAiTank()
+  end
 
   camera:setTargetPosition(Vector(10, 10), false)
   camera:setTargetEntity(playerTank, true)
@@ -199,5 +201,11 @@ function love.draw()
   if not running then
     local x, y = utils.fractionToPixels(0.5, 0.5)
     love.graphics.printf('PAUSED', x, y, 0, 'center')
+  end
+
+  if config:get('debug.fps') then
+    local fpsText = string.format('%d FPS',
+                                  love.timer.getFPS())
+    love.graphics.print(fpsText, 10, 10)
   end
 end
