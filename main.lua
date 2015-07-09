@@ -3,6 +3,7 @@
 --require 'luacov'
 --local luatrace = require 'luatrace'
 
+local PROBE = require 'PROBE'
 local input = require 'input'
 local control = require 'control'
 local utils = require 'utils'
@@ -153,6 +154,15 @@ function love.load()
   camera:onWindowResize(Aabb(0, 0, love.graphics.getDimensions()))
 
   SetupMenu()
+
+  -- debug
+  drawProbe = PROBE.new(60)
+  drawProbe:hookAll(_G, 'draw', {love})
+  drawProbe:enable()
+
+  updateProbe = PROBE.new(60)
+  updateProbe:hookAll(_G, 'update', {love})
+  updateProbe:enable()
 end
 
 function love.quit()
@@ -180,6 +190,7 @@ function love.update( timeDelta )
     return
   end
 
+  updateProbe:startCycle()
   for _, ai in ipairs(aiHoard) do
     ai:update(timeDelta)
   end
@@ -187,6 +198,7 @@ function love.update( timeDelta )
   entityManager:update(timeDelta)
   --luatrace.troff()
   camera:update(timeDelta)
+  updateProbe:endCycle()
 end
 
 function DRAW_DEBUG_STUFF()
@@ -195,8 +207,12 @@ function DRAW_DEBUG_STUFF()
 end
 
 function love.draw()
+  drawProbe:startCycle()
   camera:draw()
   guiController:draw(Vector(love.graphics.getDimensions()))
+  drawProbe:endCycle()
+  drawProbe:draw(20, 20, 150, 560, 'DRAW CYCLE')
+  updateProbe:draw(630, 20, 150, 560, 'UPDATE CYCLE')
 
   if not running then
     local x, y = utils.fractionToPixels(0.5, 0.5)
