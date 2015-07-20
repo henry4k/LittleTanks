@@ -17,6 +17,10 @@ function Entity:destroy()
   Solid.destroy(self)
 end
 
+function Solid:onInitializeBody()
+  self._body:setType('dynamic')
+end
+
 function Entity:update( timeDelta )
   -- Nothing to do here (yet)
 end

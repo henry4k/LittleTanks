@@ -20,7 +20,6 @@ end
 function EntityManager:addEntity( entity )
   self.physicsWorld:addSolid(entity)
   self.entities[entity] = true
-  entity:updatePosition(entity:getPosition())
 end
 
 function EntityManager:destroyEntity( entity )
@@ -49,39 +48,9 @@ function EntityManager:_refineCollisionInfo( collision )
   return collision
 end
 
-function EntityManager:_updateEntity( entity, timeDelta )
-  local bumpWorld = self.physicsWorld.bumpWorld -- TODO
-
-  entity:update(timeDelta)
-
-  local topLeft = entity:getTopLeft()
-  local topLeftOffset = entity:getPosition() - topLeft
-
-  local actualX, actualY, collisions
-  if entity.positionModification == 'moved' then
-    actualX, actualY, collisions =
-      bumpWorld:move(entity, topLeft[1], topLeft[2], FilterColliders)
-  else
-    if entity.positionModification == 'teleported' then
-      bumpWorld:update(entity, topLeft[1], topLeft[2])
-    end
-    actualX, actualY, collisions =
-      bumpWorld:check(entity, topLeft[1], topLeft[2], FilterColliders)
-    -- TODO: ^- Correct?
-  end
-
-  entity:updatePosition(Vector(actualX, actualY) + topLeftOffset)
-
-  for _, collision in ipairs(collisions) do
-    assert(entity ~= collision.other)
-    collision = self:_refineCollisionInfo(collision)
-    entity:onCollision(collision)
-  end
-end
-
 function EntityManager:update( timeDelta )
   for entity, _ in pairs(self.entities) do
-    self:_updateEntity(entity, timeDelta)
+    entity:update(timeDelta)
   end
 end
 

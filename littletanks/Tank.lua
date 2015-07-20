@@ -1,17 +1,15 @@
 local class = require 'middleclass'
 local Vector = require 'Vector'
 local Controllable = require 'Controllable'
-local MovableEntity = require 'littletanks.MovableEntity'
+local Entity = require 'littletanks.Entity'
 
 
-local Tank = class('littletanks.Tank', MovableEntity)
+local Tank = class('littletanks.Tank', Entity)
 Tank:include(Controllable)
 
 function Tank:initialize()
-  MovableEntity.initialize(self)
+  Entity.initialize(self)
   self:initializeControllable()
-
-  self:setSize(Vector(14, 8))
 
   self:setSteering(Vector(0, 0))
   self.friction = 0.9
@@ -23,7 +21,13 @@ end
 function Tank:destroy()
   self:destroyControllable()
 
-  MovableEntity.destroy(self)
+  Entity.destroy(self)
+end
+
+function Tank:onInitializeBody()
+  local body = self._body
+  body:setType('dynamic')
+  self:_addShape(love.physics.newRectangleShape(14, 8))
 end
 
 function Tank:setChassis( chassis )
@@ -44,11 +48,12 @@ function Tank:setTurret( turret )
 end
 
 function Tank:update( timeDelta )
-  self.force = self._direction * (self._throttle * 40)
+  local force = self._direction * (self._throttle * 40)
+  self._body:applyForce(force:unpack(2))
 
   self.chassis:update(timeDelta)
   self.turret:update(timeDelta)
-  MovableEntity.update(self, timeDelta)
+  Entity.update(self, timeDelta)
 end
 
 function Tank:draw()

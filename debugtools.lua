@@ -35,4 +35,11 @@ function debugtools.drawAabb( aabb, color )
   love.graphics.setColor(255, 255, 255)
 end
 
+function debugtools.drawPolygon( color, ... )
+  local r, g, b = ExtractColorComponents(color)
+  love.graphics.setColor(r, g, b)
+  love.graphics.polygon('line', ...)
+  love.graphics.setColor(255, 255, 255)
+end
+
 return debugtools

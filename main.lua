@@ -36,9 +36,9 @@ function InitializeConfig()
   config:set('debug.camera.visibleTiles.color',  Vector(1,0,0))
   config:set('debug.camera.scale', 1)
 
-  config:set('debug.collisionShapes.show', true)
+  config:set('debug.collisionShapes.show', false)
 
-  config:set('debug.fps', true)
+  config:set('debug.fps', false)
 end
 InitializeConfig()
 
@@ -76,19 +76,20 @@ function SetupFrames()
 end
 
 function SpawnAiTank()
-  local worldBoundaries = physicsWorld.worldBoundaries
-  local position = Vector(math.random(worldBoundaries.min[1],
-                                      worldBoundaries.max[1]),
-                          math.random(worldBoundaries.min[2],
-                                      worldBoundaries.max[2]))
+  local tileMapAabb = tileMap:getBoundaries()
+  local tileMapPixels = tileMapView:tileToPixelAabb(tileMapAabb)
+  local position = Vector(math.random(tileMapPixels.min[1],
+                                      tileMapPixels.max[1]),
+                          math.random(tileMapPixels.min[2],
+                                      tileMapPixels.max[2]))
 
   local aiTank = Tank()
   aiTank.name = 'AI '..(#aiHoard+1)
   aiTank:setChassis(SimpleTankChassis())
   aiTank:setTurret(SimpleTankTurret())
 
-  aiTank:teleportTo(position)
   entityManager:addEntity(aiTank)
+  aiTank:setPosition(position)
 
   local ai = TankAI(aiTank)
   ai:setTargetEntity(playerTank)
@@ -118,11 +119,8 @@ function love.load()
   local tileMapAabb = tileMap:getBoundaries()
   local tileMapPixels = tileMapView:tileToPixelAabb(tileMapAabb)
 
-  physicsWorld = PhysicsWorld{cellSize=16*1,
-                              worldBoundaries=tileMapPixels}
-  -- Cell size should be a multiple of the tile size.
-  -- In dense scenarios this should stick to 1,
-  -- in sparse scenarios it can be larger.
+  love.physics.setMeter(16)
+  physicsWorld = PhysicsWorld()
 
   tileSolidManager = TileSolidManager{tileMap=tileMap,
                                       tileMapView=tileMapView,
@@ -140,11 +138,11 @@ function love.load()
   playerTank:setChassis(SimpleTankChassis())
   playerTank:setTurret(SimpleTankTurret())
 
-  playerTank:teleportTo(Vector(400, 400))
   entityManager:addEntity(playerTank)
+  playerTank:setPosition(Vector(400, 400))
   control.pushControllable(playerTank)
 
-  for i=1,1000 do
+  for i=1,4 do
     SpawnAiTank()
   end
 
@@ -153,7 +151,7 @@ function love.load()
   camera:setScale(2)
   camera:onWindowResize(Aabb(0, 0, love.graphics.getDimensions()))
 
-  SetupMenu()
+  --SetupMenu()
 
   -- debug
   drawProbe = PROBE.new(60)
@@ -195,6 +193,7 @@ function love.update( timeDelta )
     ai:update(timeDelta)
   end
   --luatrace.tron()
+  physicsWorld:update(timeDelta)
   entityManager:update(timeDelta)
   --luatrace.troff()
   camera:update(timeDelta)
@@ -209,7 +208,7 @@ end
 function love.draw()
   drawProbe:startCycle()
   camera:draw()
-  guiController:draw(Vector(love.graphics.getDimensions()))
+  --guiController:draw(Vector(love.graphics.getDimensions()))
   drawProbe:endCycle()
   drawProbe:draw(20, 20, 150, 560, 'DRAW CYCLE')
   updateProbe:draw(630, 20, 150, 560, 'UPDATE CYCLE')

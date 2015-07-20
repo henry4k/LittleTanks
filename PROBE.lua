@@ -47,7 +47,7 @@ end
 function PROBE:init(slidingWindowSize)
 	self.eventNames = {}
 	self.hooks = {}
-	self:initWindow()
+	self:initWindow(slidingWindowSize)
 	self:enable(false)
 end
 
@@ -76,8 +76,11 @@ function PROBE:enable(yes)
 end
 
 --- Resets the sliding window (for average values).
-function PROBE:initWindow()
+function PROBE:initWindow(slidingWindowSize)
 	self.warmingUp = true
+  if not slidingWindowSize and self.window then
+    slidingWindowSize = self.window.size
+  end
 	self.window = {
 		size = slidingWindowSize or 60,
 		pos = 1,
@@ -212,6 +215,7 @@ end
 
 --- Draws a graphical representation of the current profile.
 -- Can only be called outside of a cycle.
+--[[
 function PROBE:draw(x, y, w, h, title)
 	assert(not self.cycleStarted,
 		"can't render profile when a cycle is active")
@@ -240,6 +244,46 @@ function PROBE:draw(x, y, w, h, title)
 			event.count, name, 1000*event.delta, 100*event.delta/total)
 		love.graphics.print(text, x+5, y+dh/2, 0, 1,
 			math.min(1, dh/(2*fh)), 0, 2*fh/2)
+		y = y+dh
+	end
+end
+]]
+
+-- Modified version:
+function PROBE:draw(x, y, w, h, title)
+	assert(not self.cycleStarted,
+		"can't render profile when a cycle is active")
+
+	local fh = love.graphics.getFont():getHeight()
+	local total = self.avg.delta
+
+	--love.graphics.rectangle('line', x, y, w, h)
+
+	if self.enabled and self.warmingUp then
+		love.graphics.print(title.."\n Warming up...", x, y-fh)
+		return
+	end
+
+	if not self.enabled and love.timer.getTime()*2 % 2 < 1 then
+		love.graphics.print("*** profiler disabled ***", x, y-fh)
+	else
+		love.graphics.print(string.format("%s: %.3f ms", title, 1000*total), x, y-fh)
+	end
+
+	for k, event in pairs(self.avg.events) do
+    local fraction = event.delta / total
+		local dh = h * fraction
+    local value = 255 * fraction
+    love.graphics.setColor(value, value, value)
+    love.graphics.rectangle('fill', x, y, w, dh)
+    love.graphics.setColor(255, 255, 255) -- reset color
+
+		name = self.eventNames[k] or tostring(k)
+		text = string.format("%.0fx %s\n%.3f ms (%.1f %%)",
+			event.count, name, 1000*event.delta, 100*fraction)
+		love.graphics.print(text, x+5, y+dh/2, 0, 1,
+			math.min(1, dh/(2*fh)), 0, 2*fh/2)
+
 		y = y+dh
 	end
 end
