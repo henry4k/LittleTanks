@@ -192,6 +192,17 @@ local function newAnimation(frames, durations, onLoop)
   )
 end
 
+--- LittleTanks Patch ---
+function Animation:setDurations( durations )
+  durations = parseDurations(durations, #self.frames)
+  local intervals, totalDuration = parseIntervals(durations)
+
+  self.durations = durations
+  self.intervals = intervals
+  self.totalDuration = totalDuration
+end
+-------------------------
+
 function Animation:clone()
   local newAnim = newAnimation(self.frames, self.durations, self.onLoop)
   newAnim.flippedH, newAnim.flippedV = self.flippedH, self.flippedV

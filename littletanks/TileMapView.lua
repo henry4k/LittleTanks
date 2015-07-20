@@ -6,15 +6,25 @@ local Aabb = require 'Aabb'
 
 local TileMapView = class('littletanks.TileMapView')
 
-function TileMapView:initialize( atlasImage, tileWidth, tileHeight, maxSprites )
-  tileHeight = tileHeight or tileWidth
+function TileMapView:initialize( options )
+  assert(options.tileMap and
+         options.image and
+         options.tileWidth)
+
+  local tileMap = options.tileMap
+  local image = options.image
+  local tileWidth = options.tileWidth
+  local tileHeight = options.tileHeight or tileWidth
+  local maxSprites = options.maxSprites
+
+  self.tileMap = tileMap
 
   self.tileWidth  = tileWidth
   self.tileHeight = tileHeight
 
-  self.atlasGrid = anim8.newGrid(tileWidth, tileHeight,
-                                 atlasImage:getDimensions())
-  self.spriteBatch = love.graphics.newSpriteBatch(atlasImage, maxSprites, 'dynamic')
+  self.imageGrid = anim8.newGrid(tileWidth, tileHeight,
+                                 image:getDimensions())
+  self.spriteBatch = love.graphics.newSpriteBatch(image, maxSprites, 'dynamic')
 end
 
 function TileMapView:destroy()
@@ -55,14 +65,16 @@ function TileMapView:pixelToTileAabb( aabb, snapMethod )
   end
 end
 
-function TileMapView:set( tileMap, aabb )
+function TileMapView:set( aabb )
+  local tileMap     = self.tileMap
+  local tileWidth   = self.tileWidth
+  local tileHeight  = self.tileHeight
+  local imageGrid   = self.imageGrid
+  local spriteBatch = self.spriteBatch
+
   assert(tileMap:getBoundaries():contains(aabb),
          'Requested area exceeds tile map.')
 
-  local tileWidth   = self.tileWidth
-  local tileHeight  = self.tileHeight
-  local atlasGrid   = self.atlasGrid
-  local spriteBatch = self.spriteBatch
   spriteBatch:clear()
 
   local xStart, yStart = aabb.min:unpack(2)
@@ -74,7 +86,7 @@ function TileMapView:set( tileMap, aabb )
                                 yStart+yOffset)
     local tile = tileMap:at(tilePosition)
     local atlasX, atlasY = tile:getAtlasCoords()
-    local quad = atlasGrid:getFrames(atlasX, atlasY)[1]
+    local quad = imageGrid:getFrames(atlasX, atlasY)[1]
     spriteBatch:add(quad, tileWidth*xOffset, tileHeight*yOffset)
   end
   end

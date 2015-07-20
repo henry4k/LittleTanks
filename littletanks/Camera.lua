@@ -12,10 +12,12 @@ local Camera = class('littletanks.Camera')
 
 function Camera:initialize( options )
   assert(options.tileMap and
-         options.tileMapView)
+         options.tileMapView and
+         options.entityView)
 
-  self.tileMap     = options.tileMap
-  self.tileMapView = options.tileMapView
+  self.tileMap       = options.tileMap
+  self.tileMapView   = options.tileMapView
+  self.entityView    = options.entityView
   self.interpolationDuration = options.interpolationDuration or 1
   self.interpolationFunction = options.interpolationFunction or mix.deceleration
 
@@ -115,11 +117,13 @@ function Camera:_internalDraw( left, top, width, height )
   local visiblePixels = Aabb(left, top, left+width, top+height)
   local tileMapView = self.tileMapView
   local visibleTiles = tileMapView:pixelToTileAabb(visiblePixels, 'outer')
+  local entityView = self.entityView
 
-  tileMapView:set(self.tileMap, visibleTiles)
+  tileMapView:set(visibleTiles)
+  entityView:set(visiblePixels)
+
   tileMapView:draw()
-
-  DRAW_DEBUG_STUFF()
+  entityView:draw()
 
   if config:get('debug.camera.visibleTiles.show') then
     self:_drawVisibleTiles(visibleTiles)

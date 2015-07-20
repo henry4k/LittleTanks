@@ -6,6 +6,18 @@
   Hülsen
 
 
+Third-Party-Bibliotheken in einen Third-Part-Ordner verschieben!
+
+
+## Performance:
+
+Vektoren und AABBs nur nutzen, wenn Daten gespeichert werden.
+Bei Funktionsparametern stattdessen eine direkte Übergabe bevorzugen.
+(Das gillt insbesondere wenn diese Daten oft geändert werden!)
+
+So viele Sprite-Batches und Atlas-Texturen wie möglich nutzen.
+
+
 ## Brainstorming:
 
 
@@ -38,8 +50,6 @@ Generierte stationäre Entities (Strukturen):
     - erzeugen Aliens
 - Banditenlager
     - spawnen bevorzugt in Nähe von Resourcenpunkten oder Werkstätten
-
-
 
 
 ## Aufgaben:

@@ -21,11 +21,11 @@ function SimpleTankTurret.static:initializeStatic()
                              0,
                              80)
   self.animationPresets = {
-    [0]   = { frames = grid:getFrames(1,1) },
-    [45]  = { frames = grid:getFrames(1,2) },
-    [90]  = { frames = grid:getFrames(1,3) },
-    [135] = { frames = grid:getFrames(1,4) },
-    [180] = { frames = grid:getFrames(1,5) }
+    [0]   = { frames = grid:getFrames(1,1, 2,1) },
+    [45]  = { frames = grid:getFrames(1,2, 2,2) },
+    [90]  = { frames = grid:getFrames(1,3, 2,3) },
+    [135] = { frames = grid:getFrames(1,4, 2,4) },
+    [180] = { frames = grid:getFrames(1,5, 2,5) }
   }
 
   self.initializedStatic = true

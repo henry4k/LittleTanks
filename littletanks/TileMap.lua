@@ -31,13 +31,14 @@ TileMap:include(EventSource)
 function TileMap:initialize( options )
   self:initializeEventSource()
 
-  assert(options.size)
+  assert(options.size and
+         options.generator)
 
   self.boundaries = Aabb(1, 1, options.size:unpack(2))
   self.idToTileMap = {}
   self.tileToIdMap = {}
 
-  self:_initializeMap()
+  self:_initializeMap(options.generator)
 end
 
 function TileMap:destroy()
@@ -45,13 +46,13 @@ function TileMap:destroy()
   self:destroyEventSource()
 end
 
-function TileMap:_initializeMap()
+function TileMap:_initializeMap( generator )
   local map = {}
   local size = self:getSize()
   local tileCount = size[1] * size[2]
   for index = 1, tileCount do
     local position = indexToPosition(index, size)
-    map[index] = 1
+    map[index] = generator:getTileAt(position)
   end
   self.map = map
 end

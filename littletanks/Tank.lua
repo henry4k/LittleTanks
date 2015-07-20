@@ -51,7 +51,7 @@ function Tank:update( timeDelta )
   local force = self._direction * (self._throttle * 40)
   self._body:applyForce(force:unpack(2))
 
-  self.chassis:update(timeDelta)
+  self.chassis:update(timeDelta, self)
   self.turret:update(timeDelta)
   Entity.update(self, timeDelta)
 end

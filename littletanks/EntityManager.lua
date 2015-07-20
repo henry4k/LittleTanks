@@ -1,5 +1,7 @@
 local class = require 'middleclass'
+local Object = class.Object
 local Vector = require 'Vector'
+local Entity = require 'littletanks.Entity'
 
 
 local EntityManager = class('littletanks.EntityManager')
@@ -33,11 +35,33 @@ function EntityManager:update( timeDelta )
   end
 end
 
-function EntityManager:draw()
-  -- TODO: Sort entities by y position
-  for entity, _ in pairs(self.entities) do
-    entity:draw()
+local function entityFilter( solid )
+  return Object.isInstanceOf(solid, Entity)
+end
+
+local function wrapEntityFilter( filter )
+  if filter then
+    return function( solid )
+        return entityFilter(solid) and filter(solid)
+      end
+  else
+    return entityFilter
   end
+end
+
+function EntityManager:getEntitiesAt( position, filter )
+  local wrappedFilter = wrapEntityFilter(filter)
+  return self.physicsWorld:getSolidsAt(position, wrappedFilter)
+end
+
+function EntityManager:getEntitiesIn( aabb, filter )
+  local wrappedFilter = wrapEntityFilter(filter)
+  return self.physicsWorld:getSolidsIn(aabb, wrappedFilter)
+end
+
+function EntityManager:getEntitiesAlong( lineStart, lineEnd, filter )
+  local wrappedFilter = wrapEntityFilter(filter)
+  return self.physicsWorld:getSolidsAlong(lineStart, lineEnd, wrappedFilter)
 end
 
 return EntityManager

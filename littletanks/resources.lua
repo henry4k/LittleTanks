@@ -7,7 +7,7 @@ end
 function resources.load()
   loadImage('littletanks/tiles.png')
   loadImage('littletanks/tiles-small.png')
-  loadImage('littletanks/tank.png')
+  loadImage('littletanks/entities.png')
   loadImage('littletanks/gui.png')
 end
 
