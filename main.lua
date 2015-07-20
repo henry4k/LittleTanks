@@ -142,7 +142,7 @@ function love.load()
   playerTank:setPosition(Vector(400, 400))
   control.pushControllable(playerTank)
 
-  for i=1,4 do
+  for i=1,10 do
     SpawnAiTank()
   end
 

@@ -58,6 +58,10 @@ function PhysicsWorld:addSolid( solid )
   assert(not self.solids[solid], 'Solid has already been added.')
   local body = love.physics.newBody(self.world)
   body:setFixedRotation(true)
+  body:setLinearDamping(1) -- TODO: Should depend on:
+                           --       - whether it is flying
+                           --       - what kind of underground it is touching
+                           --       - what kind of "tires" it is using
   solid:_setBody(body)
   self.solids[solid] = true
 end

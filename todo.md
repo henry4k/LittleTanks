@@ -1,7 +1,4 @@
 - Spieler-Klasse
-- Kameraintegration verbessern
-- Kollisionserkennung
-- Entity-Manager
 - Wegfindung für KI
 - Richtige Tile-Map (Ebene, Berge, Seen, etc.)
 - Landschaftsgenerator (love.random)
