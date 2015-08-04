@@ -1,6 +1,5 @@
 local class = require 'middleclass'
 local Vector = require 'Vector'
-local Aabb = require 'Aabb'
 
 
 local TexturedFrame = class('littletanks.TexturedFrame')
@@ -39,7 +38,6 @@ local function createSubFrame( start, size, textureSize )
 end
 
 function TexturedFrame:_buildSubFrames( outerFrame, innerFrame, textureSize )
-  local outerFrameSize = outerFrame:size()
   local innerFrameSize = innerFrame:size()
 
   -- top left
@@ -101,7 +99,6 @@ function TexturedFrame:_buildSubFrames( outerFrame, innerFrame, textureSize )
 end
 
 local function repeatSubFrame( spriteBatch, subFrame, x, y, w, h )
-  local subFrameSize = subFrame.size
   local min = math.min
   local newQuad = love.graphics.newQuad
 
@@ -141,9 +138,6 @@ local function stretchSubFrame( spriteBatch, subFrame, x, y, w, h )
 end
 
 function TexturedFrame:generate( spriteBatch, aabb )
-  local outerFrameSize = self.outerFrame:size()
-  local innerFrameSize = self.innerFrame:size()
-
   local topLeft      = self.topLeft
   local topCenter    = self.topCenter
   local topRight     = self.topRight
@@ -167,7 +161,7 @@ function TexturedFrame:generate( spriteBatch, aabb )
                   aabb.min[1] - bottomLeft.size[1],
                   aabb.max[2])
 
-  local generateSubFrame = nil
+  local generateSubFrame
   if self.stretch then
     generateSubFrame = stretchSubFrame
   else

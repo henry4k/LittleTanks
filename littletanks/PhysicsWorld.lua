@@ -29,28 +29,28 @@ function PhysicsWorld:update( timeDelta )
 end
 
 function PhysicsWorld:_beginContact( fixtureA, fixtureB, contact )
-  local solidA = fixtureA:getUserData()
-  local solidB = fixtureB:getUserData()
+  --local solidA = fixtureA:getUserData()
+  --local solidB = fixtureB:getUserData()
   --print('begin contact', fixtureA, fixtureB, contact)
 end
 
 function PhysicsWorld:_endContact( fixtureA, fixtureB, contact )
-  local solidA = fixtureA:getUserData()
-  local solidB = fixtureB:getUserData()
+  --local solidA = fixtureA:getUserData()
+  --local solidB = fixtureB:getUserData()
   --print('end contact', fixtureA, fixtureB, contact)
 end
 
 function PhysicsWorld:_preSolve( fixtureA, fixtureB, contact )
-  local solidA = fixtureA:getUserData()
-  local solidB = fixtureB:getUserData()
+  --local solidA = fixtureA:getUserData()
+  --local solidB = fixtureB:getUserData()
   --print('pre solve', fixtureA, fixtureB, contact)
 end
 
 function PhysicsWorld:_postSolve( fixtureA, fixtureB, contact,
                                   normalImpulse1, tangentImpulse1,
                                   normalImpulse2, tangentImpulse2)
-  local solidA = fixtureA:getUserData()
-  local solidB = fixtureB:getUserData()
+  --local solidA = fixtureA:getUserData()
+  --local solidB = fixtureB:getUserData()
   --print('post solve', fixtureA, fixtureB, contact)
 end
 

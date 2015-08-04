@@ -1,5 +1,4 @@
 local class = require 'middleclass'
-local Vector = require 'Vector'
 
 
 local TileMapGenerator = class('littletanks.TileMapGenerator')
