@@ -11,7 +11,7 @@ function SimpleTankTurret.static:initializeStatic()
     return
   end
 
-  local image = resources['littletanks/tank.png']
+  local image = resources['littletanks/entities.png']
   self.image = image
 
   local grid = anim8.newGrid(14,

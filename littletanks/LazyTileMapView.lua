@@ -14,22 +14,21 @@ function LazyTileMapView:setMargin( margin )
   self.margin = margin
 end
 
-function LazyTileMapView:setOuter( tileMap, aabb )
-  TileMapView.set(self, tileMap, aabb)
-  self.tileMap = tileMap
+function LazyTileMapView:setOuter( aabb )
+  TileMapView.set(self, aabb)
   self.outerAabb = aabb
 end
 
-function LazyTileMapView:set( tileMap, aabb )
+function LazyTileMapView:set( aabb )
   self.innerAabb = aabb
   local outerAabb = self.outerAabb
-  if tileMap ~= self.tileMap or not outerAabb:contains(aabb) then
+  if not outerAabb:contains(aabb) then
     local margin = self.margin
     local newOuterAabb = Aabb(aabb.min - margin,
                               aabb.max + margin)
-    newOuterAabb = tileMap:getBoundaries():intersection(newOuterAabb)
+    newOuterAabb = self.tileMap:getBoundaries():intersection(newOuterAabb)
     if not outerAabb:contains(newOuterAabb) then
-      self:setOuter(tileMap, newOuterAabb)
+      self:setOuter(newOuterAabb)
     end
   end
 end

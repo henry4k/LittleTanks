@@ -12,7 +12,7 @@ function SimpleTankChassis.static:initializeStatic()
     return
   end
 
-  local image = resources['littletanks/tank.png']
+  local image = resources['littletanks/entities.png']
   self.image = image
 
   local grid = anim8.newGrid(16, 16, image:getDimensions())
@@ -36,7 +36,7 @@ end
 function SimpleTankChassis:update( timeDelta, tank )
   TankChassis.update(self, timeDelta)
   --self.animation:setDurations()
-  self.animation:update(timeDelta * tank.velocity:length())
+  self.animation:update(timeDelta * tank:getVelocity():length())
 end
 
 function SimpleTankChassis:draw()

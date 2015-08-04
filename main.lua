@@ -18,7 +18,6 @@ local Tile = require 'littletanks.Tile'
 local LazyTileMapView = require 'littletanks.LazyTileMapView'
 local PhysicsWorld = require 'littletanks.PhysicsWorld'
 local TileSolidManager = require 'littletanks.TileSolidManager'
-local EntityView = require 'littletanks.EntityView'
 local EntityManager = require 'littletanks.EntityManager'
 local TankAI = require 'littletanks.TankAI'
 --local GUIButton = require 'littletanks.gui.Button'
@@ -105,12 +104,9 @@ function love.load()
 
   tileMapView = LazyTileMapView{tileMap = tileMap,
                                 image = resources['littletanks/tiles.png'],
-                                tileWidth = 16,
+                                tileWidth  = 16,
                                 tileHeight = 16}
   tileMapView:setMargin(4)
-
-  local tileMapAabb = tileMap:getBoundaries()
-  local tileMapPixels = tileMapView:tileToPixelAabb(tileMapAabb)
 
   love.physics.setMeter(16)
   physicsWorld = PhysicsWorld()
@@ -123,12 +119,11 @@ function love.load()
 
   entityManager = EntityManager{physicsWorld=physicsWorld}
 
-  local entityView = EntityView{entityManager=entityManager,
-                                atlasImage=CreateEntityAtlasImage()}
+  local tileMapAabb = tileMap:getBoundaries()
+  local worldBoundaries = tileMapView:tileToPixelAabb(tileMapAabb)
 
-  camera = Camera{tileMap=tileMap,
-                  tileMapView=tileMapView,
-                  entityView=entityView}
+  camera = Camera{drawFn=DrawCameraView,
+                  worldBoundaries=worldBoundaries}
 
   playerTank = Tank()
   playerTank.name = 'Player'
@@ -197,9 +192,18 @@ function love.update( timeDelta )
   updateProbe:endCycle()
 end
 
-function DRAW_DEBUG_STUFF()
+function DrawCameraView( visiblePixels )
+  local visibleTiles = tileMapView:pixelToTileAabb(visiblePixels, 'outer')
+  tileMapView:set(visibleTiles)
+
+  tileMapView:draw()
   entityManager:draw()
   physicsWorld:draw()
+
+  if config:get('debug.camera.visibleTiles.show') then
+    local visibleTilesPixels = tileMapView:tileToPixelAabb(visibleTiles)
+    debugtools.drawAabb(visibleTilesPixels, 'debug.camera.visibleTiles.color')
+  end
 end
 
 function love.draw()

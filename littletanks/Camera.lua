@@ -11,17 +11,14 @@ local getTime = love.timer.getTime
 local Camera = class('littletanks.Camera')
 
 function Camera:initialize( options )
-  assert(options.tileMap and
-         options.tileMapView and
-         options.entityView)
+  assert(options.drawFn, 'Draw function missing.')
+  assert(options.worldBoundaries, 'World boundaries missing.')
 
-  self.tileMap       = options.tileMap
-  self.tileMapView   = options.tileMapView
-  self.entityView    = options.entityView
+  self.drawFn = options.drawFn
   self.interpolationDuration = options.interpolationDuration or 1
   self.interpolationFunction = options.interpolationFunction or mix.deceleration
 
-  self.camera = gamera.new(self:_getWorldBoundaries():unpack())
+  self.camera = gamera.new(options.worldBoundaries:unpack())
   self._internalDrawFn = function(...)
       self:_internalDraw(...)
     end
@@ -36,11 +33,6 @@ function Camera:destroy()
   config:removeEventTarget('variableChanged', self)
 end
 
-function Camera:_getWorldBoundaries()
-  local tileMapAabb = self.tileMap:getBoundaries()
-  local tileMapView = self.tileMapView
-  return tileMapView:tileToPixelAabb(tileMapAabb)
-end
 
 function Camera:_getInterpolatedPosition()
   local targetPosition = self:getTargetPosition()
@@ -103,34 +95,13 @@ function Camera:update( timeDelta )
   self.camera:setPosition(position:unpack(2))
 end
 
-function Camera:_drawVisiblePixels( visiblePixels )
-  debugtools.drawAabb(visiblePixels, 'debug.camera.visiblePixels.color')
-end
-
-function Camera:_drawVisibleTiles( visibleTiles )
-  local tileMapView = self.tileMapView
-  local visibleTilesPixels = tileMapView:tileToPixelAabb(visibleTiles)
-  debugtools.drawAabb(visibleTilesPixels, 'debug.camera.visibleTiles.color')
-end
-
 function Camera:_internalDraw( left, top, width, height )
   local visiblePixels = Aabb(left, top, left+width, top+height)
-  local tileMapView = self.tileMapView
-  local visibleTiles = tileMapView:pixelToTileAabb(visiblePixels, 'outer')
-  local entityView = self.entityView
 
-  tileMapView:set(visibleTiles)
-  entityView:set(visiblePixels)
-
-  tileMapView:draw()
-  entityView:draw()
-
-  if config:get('debug.camera.visibleTiles.show') then
-    self:_drawVisibleTiles(visibleTiles)
-  end
+  self.drawFn(visiblePixels)
 
   if config:get('debug.camera.visiblePixels.show') then
-    self:_drawVisiblePixels(visiblePixels)
+    debugtools.drawAabb(visiblePixels, 'debug.camera.visiblePixels.color')
   end
 end
 

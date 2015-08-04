@@ -44,6 +44,11 @@ function Solid:setPosition( position )
   self._body:setPosition(position:unpack(2))
 end
 
+function Solid:getVelocity()
+  assert(self._body, 'Add to physics world first.')
+  return Vector(self._body:getLinearVelocity())
+end
+
 function Solid:onCollision( collision )
   -- Nothing to do here (yet)
 end

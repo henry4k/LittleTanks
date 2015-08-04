@@ -1,6 +1,5 @@
 local class = require 'middleclass'
 local Object = class.Object
-local Vector = require 'Vector'
 local Entity = require 'littletanks.Entity'
 
 
@@ -32,6 +31,13 @@ end
 function EntityManager:update( timeDelta )
   for entity, _ in pairs(self.entities) do
     entity:update(timeDelta)
+  end
+end
+
+function EntityManager:draw()
+  -- TODO: Sort entities by y position
+  for entity, _ in pairs(self.entities) do
+    entity:draw()
   end
 end
 
