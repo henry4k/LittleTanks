@@ -46,4 +46,14 @@ function AtlasImage:getQuad( name )
   return quad
 end
 
+function AtlasImage:getQuadsStrip( prefix, count )
+  local quadList = {}
+  for i = 1, count do
+    local name = prefix..i
+    local quad = self:getQuad(name)
+    quadList[i] = quad
+  end
+  return quadList
+end
+
 return AtlasImage

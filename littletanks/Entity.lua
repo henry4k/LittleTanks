@@ -25,7 +25,7 @@ function Entity:update( timeDelta )
   -- Nothing to do here (yet)
 end
 
-function Entity:draw()
+function Entity:draw( renderManager )
   error('Implementation missing.')
 end
 

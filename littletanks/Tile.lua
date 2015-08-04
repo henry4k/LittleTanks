@@ -4,10 +4,8 @@ local class = require 'middleclass'
 local Tile = class('littletanks.Tile')
 
 function Tile:initialize( options )
-  assert(options.atlasX and
-         options.atlasY)
-  self.atlasX = options.atlasX
-  self.atlasY = options.atlasY
+  assert(options.quadName, 'No quad name given.')
+  self.quadName = options.quadName
   self.collisionCategories = {}
 end
 
@@ -15,9 +13,8 @@ function Tile:getCollisionCategories()
   return self.collisionCategories
 end
 
-function Tile:getAtlasCoords()
-  return self.atlasX,
-         self.atlasY
+function Tile:getQuadName()
+  return self.quadName
 end
 
 return Tile

@@ -105,7 +105,7 @@ function PhysicsWorld:getSolidsAlong( lineStart, lineEnd, filter )
 end
 ]]
 
-function PhysicsWorld:draw()
+function PhysicsWorld:draw( renderContext )
   if config:get('debug.collisionShapes.show') then
     for solid, _ in pairs(self.solids) do
       local body = solid._body
@@ -114,7 +114,9 @@ function PhysicsWorld:draw()
         local shape = fixture:getShape()
         local shapeType = shape:getType()
         if shapeType == 'polygon' then
-          debugtools.drawPolygon('debug.collisionShapes.color', body:getWorldPoints(shape:getPoints()))
+          debugtools.drawPolygonRC(renderContext,
+                                   'debug.collisionShapes.color',
+                                   body:getWorldPoints(shape:getPoints()))
         else
           error('Unknown shape type: '..shapeType)
         end

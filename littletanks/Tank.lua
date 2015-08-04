@@ -56,17 +56,12 @@ function Tank:update( timeDelta )
   Entity.update(self, timeDelta)
 end
 
-function Tank:draw()
-  love.graphics.push()
-    love.graphics.translate(self:getPosition():unpack(2))
+function Tank:draw( renderManager )
+  self.chassis:draw(renderManager)
 
-    self.chassis:draw()
-
-    love.graphics.push()
-      love.graphics.translate(self.chassis.turretAttachmentPoint:unpack(2))
-      self.turret:draw()
-    love.graphics.pop()
-  love.graphics.pop()
+  renderManager:pushTransformation(self.chassis.turretAttachmentPoint:unpack(2))
+    self.turret:draw(renderManager)
+  renderManager:popTransformation()
 end
 
 local up = Vector(0, 1)

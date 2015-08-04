@@ -35,6 +35,14 @@ function EntityManager:update( timeDelta )
   end
 end
 
+function EntityManager:draw( renderContext )
+  for entity, _ in pairs(self.entities) do
+    renderContext:pushTransformation(entity:getPosition():unpack(2))
+    entity:draw(renderContext)
+    renderContext:popTransformation()
+  end
+end
+
 local function entityFilter( solid )
   return Object.isInstanceOf(solid, Entity)
 end

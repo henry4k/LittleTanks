@@ -4,13 +4,12 @@ local Vector = require 'Vector'
 
 local debugtools = {}
 
-function debugtools.drawText()
-  local yOffset = 0
-  for key, value in pairs(debugtools.values) do
-    local text = ('%s: %s'):format(key, value)
-    love.graphics.print(text, 10, 10+yOffset)
-    yOffset = yOffset + 30
-  end
+local function setTransformation( transformation )
+  love.graphics.translate(transformation.x,
+                          transformation.y)
+  love.graphics.rotate(transformation.r)
+  love.graphics.scale(transformation.sx,
+                      transformation.sy)
 end
 
 local function ExtractColorComponents( color )
@@ -35,11 +34,35 @@ function debugtools.drawAabb( aabb, color )
   love.graphics.setColor(255, 255, 255)
 end
 
+local function drawAabb( context, transformation )
+  love.graphics.push()
+    setTransformation(transformation)
+    debugtools.drawAabb(unpack(context))
+  love.graphics.pop()
+end
+
+function debugtools.drawAabbRC( renderContext, ... )
+  renderContext:draw{drawFn=drawAabb,
+                     context={...}}
+end
+
 function debugtools.drawPolygon( color, ... )
   local r, g, b = ExtractColorComponents(color)
   love.graphics.setColor(r, g, b)
   love.graphics.polygon('line', ...)
   love.graphics.setColor(255, 255, 255)
+end
+
+local function drawPolygon( context, transformation )
+  love.graphics.push()
+    setTransformation(transformation)
+    debugtools.drawPolygon(unpack(context))
+  love.graphics.pop()
+end
+
+function debugtools.drawPolygonRC( renderContext, ... )
+  renderContext:draw{drawFn=drawPolygon,
+                     context={...}}
 end
 
 return debugtools

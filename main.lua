@@ -10,6 +10,8 @@ local utils = require 'utils'
 local config = require 'config'
 local Vector = require 'Vector'
 local Aabb = require 'Aabb'
+local RenderManager = require 'littletanks.RenderManager'
+local RenderContext = require 'littletanks.RenderContext'
 local AtlasImage = require 'littletanks.AtlasImage'
 local Camera = require 'littletanks.Camera'
 local TileMap = require 'littletanks.TileMap'
@@ -18,7 +20,6 @@ local Tile = require 'littletanks.Tile'
 local LazyTileMapView = require 'littletanks.LazyTileMapView'
 local PhysicsWorld = require 'littletanks.PhysicsWorld'
 local TileSolidManager = require 'littletanks.TileSolidManager'
-local EntityView = require 'littletanks.EntityView'
 local EntityManager = require 'littletanks.EntityManager'
 local TankAI = require 'littletanks.TankAI'
 --local GUIButton = require 'littletanks.gui.Button'
@@ -26,8 +27,6 @@ local TankAI = require 'littletanks.TankAI'
 --local GUIController = require 'littletanks.gui.Controller'
 
 local Tank = require 'littletanks.Tank'
-local SimpleTankChassis = require 'littletanks.SimpleTankChassis'
-local SimpleTankTurret = require 'littletanks.SimpleTankTurret'
 
 local resources = require 'littletanks.resources'
 local imagefont = require 'imagefont'
@@ -62,6 +61,13 @@ function CreateEntityAtlasImage()
   return atlasImage
 end
 
+function CreateTileAtlasImage()
+  local atlasImage = AtlasImage(resources['littletanks/tiles.png'])
+  atlasImage:setQuad('Ground', Aabb(0, 0, 16, 16))
+  atlasImage:setQuad('Mountain', Aabb(16, 0, 16, 16))
+  return atlasImage
+end
+
 function SpawnAiTank()
   local tileMapAabb = tileMap:getBoundaries()
   local tileMapPixels = tileMapView:tileToPixelAabb(tileMapAabb)
@@ -72,8 +78,8 @@ function SpawnAiTank()
 
   local aiTank = Tank()
   aiTank.name = 'AI '..(#aiHoard+1)
-  aiTank:setChassis(SimpleTankChassis())
-  aiTank:setTurret(SimpleTankTurret())
+  --aiTank:setChassis(SimpleTankChassis())
+  --aiTank:setTurret(SimpleTankTurret())
 
   entityManager:addEntity(aiTank)
   aiTank:setPosition(position)
@@ -98,19 +104,16 @@ function love.load()
   tileMap = TileMap{size=Vector(40, 40),
                     generator=tileMapGenerator}
 
-  local groundTile   = Tile{ atlasX=1, atlasY=1 }
-  local mountainTile = Tile{ atlasX=2, atlasY=1 }
+  local groundTile   = Tile{ quadName='Ground' }
+  local mountainTile = Tile{ quadName='Mountain' }
   tileMap:registerTile(groundTile)
   tileMap:registerTile(mountainTile)
 
   tileMapView = LazyTileMapView{tileMap = tileMap,
-                                image = resources['littletanks/tiles.png'],
-                                tileWidth = 16,
+                                atlasImage = CreateTileAtlasImage(),
+                                tileWidth  = 16,
                                 tileHeight = 16}
   tileMapView:setMargin(4)
-
-  local tileMapAabb = tileMap:getBoundaries()
-  local tileMapPixels = tileMapView:tileToPixelAabb(tileMapAabb)
 
   love.physics.setMeter(16)
   physicsWorld = PhysicsWorld()
@@ -123,17 +126,17 @@ function love.load()
 
   entityManager = EntityManager{physicsWorld=physicsWorld}
 
-  local entityView = EntityView{entityManager=entityManager,
-                                atlasImage=CreateEntityAtlasImage()}
-
   camera = Camera{tileMap=tileMap,
                   tileMapView=tileMapView,
-                  entityView=entityView}
+                  drawFn=DrawCameraView}
+
+  renderManager = RenderManager()
+  renderContext = RenderContext(renderManager)
 
   playerTank = Tank()
   playerTank.name = 'Player'
-  playerTank:setChassis(SimpleTankChassis())
-  playerTank:setTurret(SimpleTankTurret())
+  --playerTank:setChassis(SimpleTankChassis())
+  --playerTank:setTurret(SimpleTankTurret())
 
   entityManager:addEntity(playerTank)
   playerTank:setPosition(Vector(400, 400))
@@ -161,6 +164,8 @@ function love.load()
 end
 
 function love.quit()
+  renderManager:destroy()
+  camera:destroy()
   entityManager:destroy()
   tileSolidManager:destroy()
   physicsWorld:destroy()
@@ -197,9 +202,11 @@ function love.update( timeDelta )
   updateProbe:endCycle()
 end
 
-function DRAW_DEBUG_STUFF()
-  entityManager:draw()
-  physicsWorld:draw()
+function DrawCameraView()
+  tileMapView:draw(renderContext)
+  entityManager:draw(renderContext)
+  physicsWorld:draw(renderContext)
+  renderManager:flush()
 end
 
 function love.draw()

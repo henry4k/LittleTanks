@@ -1,5 +1,4 @@
 local class = require 'middleclass'
-local anim8 = require 'anim8'
 local Vector = require 'Vector'
 local Aabb = require 'Aabb'
 
@@ -8,11 +7,11 @@ local TileMapView = class('littletanks.TileMapView')
 
 function TileMapView:initialize( options )
   assert(options.tileMap and
-         options.image and
+         options.atlasImage and
          options.tileWidth)
 
   local tileMap = options.tileMap
-  local image = options.image
+  local atlasImage = options.atlasImage
   local tileWidth = options.tileWidth
   local tileHeight = options.tileHeight or tileWidth
   local maxSprites = options.maxSprites
@@ -21,10 +20,9 @@ function TileMapView:initialize( options )
 
   self.tileWidth  = tileWidth
   self.tileHeight = tileHeight
+  self.atlasImage = atlasImage
 
-  self.imageGrid = anim8.newGrid(tileWidth, tileHeight,
-                                 image:getDimensions())
-  self.spriteBatch = love.graphics.newSpriteBatch(image, maxSprites, 'dynamic')
+  self.spriteBatch = love.graphics.newSpriteBatch(atlasImage.image, maxSprites, 'dynamic')
 end
 
 function TileMapView:destroy()
@@ -69,7 +67,7 @@ function TileMapView:set( aabb )
   local tileMap     = self.tileMap
   local tileWidth   = self.tileWidth
   local tileHeight  = self.tileHeight
-  local imageGrid   = self.imageGrid
+  local atlasImage  = self.atlasImage
   local spriteBatch = self.spriteBatch
 
   assert(tileMap:getBoundaries():contains(aabb),
@@ -85,8 +83,8 @@ function TileMapView:set( aabb )
     local tilePosition = Vector(xStart+xOffset,
                                 yStart+yOffset)
     local tile = tileMap:at(tilePosition)
-    local atlasX, atlasY = tile:getAtlasCoords()
-    local quad = imageGrid:getFrames(atlasX, atlasY)[1]
+    local quadName = tile:getQuadName()
+    local quad = atlasImage:getQuad(quadName)
     spriteBatch:add(quad, tileWidth*xOffset, tileHeight*yOffset)
   end
   end
@@ -94,8 +92,9 @@ function TileMapView:set( aabb )
   spriteBatch:flush()
 end
 
-function TileMapView:draw( ... )
-  love.graphics.draw(self.spriteBatch, ...)
+function TileMapView:draw( renderContext )
+  renderContext:draw{texture=self.atlasImage.image,
+                     context=self.spriteBatch}
 end
 
 return TileMapView
