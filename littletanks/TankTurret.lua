@@ -18,4 +18,8 @@ function TankTurret:draw()
   error('Missing implementation.')
 end
 
+function TankTurret:onTurretRotation( angle )
+  -- Nothing to do here (yet).
+end
+
 return TankTurret

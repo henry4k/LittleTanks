@@ -43,7 +43,20 @@ function SimpleTankTurret:update( timeDelta )
 end
 
 function SimpleTankTurret:draw()
-  self.animation:draw(self.image, -7, -5)
+  local xScale = 1
+  if self.flipImage then
+    xScale = -1
+  end
+  self.animation:draw(self.image, -7*xScale, -5, 0, xScale, 1)
+end
+
+function SimpleTankTurret:onTurretRotation( angle )
+  local angleInDegree = math.deg(angle)
+  local animationName = math.abs(angleInDegree)
+  local flipImage = angle < 0
+
+  self:setAnimation(animationName)
+  self.flipImage = flipImage
 end
 
 function SimpleTankTurret:setAnimation( name )

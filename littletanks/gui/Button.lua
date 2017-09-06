@@ -27,7 +27,7 @@ function GUIButton:getSize()
   return self.size
 end
 
-function GUIButton:draw( origin )
+function GUIButton:draw()
   local size = self.size
   love.graphics.print(self.label, -size[1]/2, -size[2]/2)
 end

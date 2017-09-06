@@ -47,7 +47,7 @@ function SimpleTankChassis:draw()
   self.animation:draw(self.image, -8*xScale, -8, 0, xScale, 1)
 end
 
-function TankChassis:onTankRotation( angle )
+function SimpleTankChassis:onTankRotation( angle )
   local angleInDegree = math.deg(angle)
   local animationName = math.abs(angleInDegree)
   local flipImage = angle < 0

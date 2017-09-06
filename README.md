@@ -11,9 +11,9 @@ Cute little tanks shooting with cute little guns
 Dependencies
 ------------
 
-- [kikito/middleclass](http://github.com/kikito/middleclass)
 - [kikito/anim8](http://github.com/kikito/anim8)
 - [kikito/gamera](http://github.com/kikito/gamera)
+- [kikito/middleclass](http://github.com/kikito/middleclass)
 
 
 License and copyright

@@ -108,6 +108,7 @@ function Tank:setSteering( steering )
 
     if self.chassis then
       self.chassis:onTankRotation(snappedAngle)
+      self.turret:onTurretRotation(snappedAngle) -- TODO: DEBUG
     end
   else
     self._throttle = 0

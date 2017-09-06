@@ -20,9 +20,9 @@ local PhysicsWorld = require 'littletanks.PhysicsWorld'
 local TileSolidManager = require 'littletanks.TileSolidManager'
 local EntityManager = require 'littletanks.EntityManager'
 local TankAI = require 'littletanks.TankAI'
---local GUIButton = require 'littletanks.gui.Button'
---local GUIMenu = require 'littletanks.gui.Menu'
---local GUIController = require 'littletanks.gui.Controller'
+local GUIButton = require 'littletanks.gui.Button'
+local GUIMenu = require 'littletanks.gui.Menu'
+local GUIController = require 'littletanks.gui.Controller'
 
 local Tank = require 'littletanks.Tank'
 local SimpleTankChassis = require 'littletanks.SimpleTankChassis'
@@ -59,6 +59,28 @@ function CreateEntityAtlasImage()
   assert(atlasImage:getQuad('TankDriveNorth1') ~= nil)
   assert(atlasImage:getQuad('TankDriveNorth2') ~= nil)
   return atlasImage
+end
+
+function SetupMenu()
+  guiController = GUIController()
+  control.pushControllable(guiController)
+
+  local menu = GUIMenu('Das Menue')
+  menu:addEntry(GUIButton('Button 1', 'Button1 pressed', print))
+  menu:addEntry(GUIButton('Button 2', 'Button2 pressed', print))
+  menu:addEntry(GUIButton('Button 3', 'Button3 pressed', print))
+
+  guiController:pushMenu(menu)
+end
+
+function SetupFrames()
+  local texture = resources['littletanks/gui.png']
+  texturedFrame = TexturedFrame{textureSize = Vector(texture:getDimensions()),
+                                outerFrame = Aabb(10, 10, 50, 50),
+                                innerFrame = Aabb(20, 20, 40, 40),
+                                stretch = false}
+  frameSpriteBatch = love.graphics.newSpriteBatch(texture)
+  texturedFrame:generate(frameSpriteBatch, Aabb(100, 100, 150, 150))
 end
 
 function SpawnAiTank()

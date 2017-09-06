@@ -43,11 +43,11 @@ function GUIMenu:getSize()
   return size
 end
 
-function GUIMenu:draw( origin )
+function GUIMenu:draw()
   local size = self:getSize()
 
   local margin = self.entryMargin
-  local position = origin + Vector(0, -size[2]/2)
+  local position = Vector(0, -size[2]/2)
   for _, entry in ipairs(self.entries) do
     local entrySize = entry:getSize()
 

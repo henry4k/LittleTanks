@@ -22,7 +22,7 @@ end
 function GUIEntry:update( timeDelta )
 end
 
-function GUIEntry:draw( origin )
+function GUIEntry:draw()
   error('Missing implementation.')
 end
 
